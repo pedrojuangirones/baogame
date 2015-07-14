@@ -1,0 +1,13 @@
+{
+  "name": "myNotePad",
+  "description": "a simple note creator app",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "express": "4.0.0",
+    "nedb": "0.10.5",
+    "socket.io": "0.9.16",
+    "ejs": "1.0.0",
+    "express-ejs-layouts": "0.3.1"
+  }
+}

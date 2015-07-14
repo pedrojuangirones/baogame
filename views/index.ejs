@@ -1,0 +1,20 @@
+<h1>Welcome to NoteMaker! Woo!</h1>
+<table>
+  <tr>
+    <th>Title</th>
+    <th>Body</th>
+  </tr>
+  <tr>
+    <td colspan="2">
+      Title: <input type="text" ng-model="title" />
+      Body: <input type="text" ng-model="body" />
+      <button ng-click="addNote()">Add note</button>
+    </td>
+  </tr>
+  <tr ng-repeat="note in notes">
+    <td>{{note.title}}</td>
+    <td>{{note.body}}</td>
+  </tr>
+</table>
+
+<button ng-repeat="note in notes" ng-click="removeNote(note)">Remove Note</button>
