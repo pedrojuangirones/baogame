@@ -21,6 +21,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', function(request, response) {
   response.render('index.ejs');
 });
+
 io.sockets.on('connection', function (socket) {
   notes.list(function (err, documents) {
     socket.emit('list', documents);
@@ -37,4 +38,9 @@ io.sockets.on('connection', function (socket) {
       io.sockets.emit('deletedNote', note);
     });
   });
+
+  socket.on('newmove', function(move) {
+    console.log('newmove ' + move);
+    socket.broadcast.emit('newmove' ,  move  );
+  })
 });

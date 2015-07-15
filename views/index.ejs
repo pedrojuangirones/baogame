@@ -1,4 +1,32 @@
 <h1>Welcome to NoteMaker! Woo!</h1>
+
+<table class="doNoSelect" align="center" id="board" ng-click="doClick(h, $event)"
+                                 ng-dblclick="doDblClick(h, $event)">
+  <tr>
+    <td>
+      <canvas id="handCanvas1" width="50" height="400">
+      <p>Sorry: Browser does not support Graphics Canvas</p></canvas>
+    </td>
+    <td>
+      <table border="black" ng-repeat="f in board.fields">
+        <tr ng-repeat="r in board.rows">
+          <td ng-repeat="h in board.houses">
+            <canvas  id="canvasID.{{f}}.{{r}}.{{h}}" width="100" height="100">
+            <p>Sorry: Browser does not support Graphics Canvas</p></canvas>
+          </td>
+        </tr>
+      </table>
+    </td>
+  <td>
+    <canvas id="handCanvas2" width="50" height="400">
+    <p>Sorry: Browser does not support Graphics Canvas</p></canvas>
+    </td>
+  </tr>
+</table>
+
+<p>Log: {{log}}</p>
+<p>Server Log: {{serverlog}}</p>
+
 <table>
   <tr>
     <th>Title</th>
