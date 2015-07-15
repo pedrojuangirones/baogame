@@ -1,0 +1,94 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : 25-may-2015, 14:16:08
+    Author     : PJ
+*/
+html {
+  background-color: #E3C875;
+  font-size: 16px; /* px means 'pixels': the base font size is now 10 pixels high  */
+  /*
+  font-family: 'Chewy', cursive;
+  font-family: 'Walter Turncoat', cursive;
+  font-family: 'Bubblegum Sans', cursive;
+  font-family: 'Unkempt', cursive;
+  font-family: 'Joti One', cursive;
+  font-family: 'Ravi Prakash', cursive;
+  */
+  font-family: 'Caesar Dressing', cursive;
+  
+}
+
+body {
+  //width: 1000px;
+  margin: 0 auto;
+  //background-color: #FF9500;
+  padding: 20px 20px 20px 20px;
+  //border: 5px solid black;
+}
+
+h1 {
+  font-size: 60px;
+   // line-height: 10px;
+
+  text-align: center;
+  margin: 0;
+  padding: 0px 0;    
+  color: #3D1F00;
+  //text-shadow: 13px 13px 1px black;
+}
+
+p {
+  font-size: 16px;    
+  letter-spacing: 1px;
+    color: #3D1F00;
+
+}
+
+li {
+  color: green;
+}
+
+#inviteInID {
+  color: grey;
+}
+
+.toplinks {
+  padding: 30px 50px;
+  text-align: left;
+  font-size: 30px;
+  //line-height: 10;
+}
+
+.toplink1 {
+  color: green;
+}
+
+.toplink2 {
+  color: yellow;
+}
+
+.toplink3 {
+  color: red;
+}
+
+img {
+  display: block;
+  margin: 0 auto;
+}
+
+.floatRight{
+  float: right;
+}
+
+.floatLeft{
+  float: left;
+}
+
+form {
+  
+}
+

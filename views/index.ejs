@@ -1,32 +1,108 @@
 <!DOCTYPE html>
 
-<h1>Bao Game</h1>
 
-<table class="doNoSelect" align="center" id="board" ng-click="doClick(h, $event)"
-                                 ng-dblclick="doDblClick(h, $event)">
-  <tr>
-    <td>
-      <canvas id="handCanvas1" width="50" height="400">
-      <p>Sorry: Browser does not support Graphics Canvas</p></canvas>
-    </td>
-    <td>
-      <table border="black" ng-repeat="f in board.fields">
-        <tr ng-repeat="r in board.rows">
-          <td ng-repeat="h in board.houses">
-            <canvas  id="canvasID.{{f}}.{{r}}.{{h}}" width="100" height="100">
-            <p>Sorry: Browser does not support Graphics Canvas</p></canvas>
-          </td>
-        </tr>
-      </table>
-    </td>
-  <td>
-    <canvas id="handCanvas2" width="50" height="400">
-    <p>Sorry: Browser does not support Graphics Canvas</p></canvas>
-    </td>
-  </tr>
-</table>
+
+  <TABLE WIDTH=100% BORDER=0 CELLPADDING=0 CELLSPACING=0>
+<COL WIDTH=20%>
+<COL WIDTH=60%>
+<COL WIDTH=20%*>
+<TR VALIGN=TOP>
+  <TD WIDTH=20%>
+
+  </TD>
+  <TD  WIDTH=60%>
+    <h1>{{pageTitle}}</h1>
+
+  </TD>
+  <TD WIDTH=20%>
+                <form name="signInForm">
+                  You are now playing as:<label id='activeUserLabel'>guest</label><br>
+                  <label class="floatLeft">User:</label>
+                          <input type="text" name="userName" id="userNameInput" class="floatRight"/> <br>
+                  <label class="floatLeft">Password:</label>
+                  <input type="password" name="password" value="" class="floatRight"/><br><br>
+                  <input type='button' value='Sign in' ng-click='signIn()' />
+                  <input type='reset'  value='Reset' />
+                  <input type='button' value='Register' ng-click ='register()'/>
+            </form>
+                </TD>
+      </TR>
+<TR VALIGN=TOP>
+  <TD WIDTH=20%>
+                      <ul class="toplinks">
+                        <li class="toplink1">What is Bao    </li>
+                        <li class="toplink2">Game rules   </li>
+                        <li class="toplink3">Bao online</li>
+                        <li class="toplink1">Contact</li>
+
+                      </ul>		</TD>
+  <TD WIDTH=60%>
+    <table class="doNoSelect" align="center" id="board" ng-click="doClick(h, $event)"
+                                     ng-dblclick="doDblClick(h, $event)">
+      <tr>
+        <td>
+          <canvas id="handCanvas1" width="50" height="400">
+          <p>Sorry: Browser does not support Graphics Canvas</p></canvas>
+        </td>
+        <td>
+          <table border="black" ng-repeat="f in board.fields">
+            <tr ng-repeat="r in board.rows">
+              <td ng-repeat="h in board.houses">
+                <canvas  id="canvasID.{{f}}.{{r}}.{{h}}" width="100" height="100">
+                <p>Sorry: Browser does not support Graphics Canvas</p></canvas>
+              </td>
+            </tr>
+          </table>
+        </td>
+      <td>
+        <canvas id="handCanvas2" width="50" height="400">
+        <p>Sorry: Browser does not support Graphics Canvas</p></canvas>
+        </td>
+      </tr>
+    </table>
+  </TD>
+              <TD WIDTH=20%>
+                <form name="inviteForm">
+                <p>Who is online</p>
+                <select  name="onlineUsers" size="14" style="width: 217px;">
+                  <option id="option2"> user 215 (idle)
+                  <option id="option3"> user 32 (playing)
+                  <option id="option4"> user 404 (playing)
+                  <option id="option5"> user 5 (busy)
+                </select><br>
+                 <input type='button' value="Invite" ng-click ="invite()"/>
+                 <input type='button' value="Block user" ng-click ="blockUser()"/>
+
+                <p >
+                  You have invited: <br>
+                <select  name="invitesMade" size="3" style="width: 217px;">
+                  <option id="option3"> user 3
+                </select>
+                 </p>
+                 <input type='button' value="Cancel Invite" ng-click ="cancelInvite()"/>
+
+                <p >
+                  You have an invitation from: <br>
+                <select  name="invitesReceived" size="3" style="width: 217px;">
+                  <option id="option1"> user 25 (playing)
+                  <option id="option2"> user 31 (playing)
+                </select>
+                 <input type='button' value="Accept and start" ng-click ="acceptInvite()"/>
+                 <input type='button' value="Decline" ng-click ="declineInvite()"/>
+
+                </p>
+                </form>
+              </TD>
+</TR>
+</TABLE>
 
 <div align="center">
   <p>Log: {{log}}</p>
   <p>Server Log: {{serverlog}}</p>
 </div>
+  <p align='center'>
+  <form name="outputForm">
+        <input type='text'  size='40' name="outputText">
+
+  </form>
+  </p>
