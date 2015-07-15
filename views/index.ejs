@@ -1,4 +1,6 @@
-<h1>Welcome to NoteMaker! Woo!</h1>
+<!DOCTYPE html>
+
+<h1>Bao Game</h1>
 
 <table class="doNoSelect" align="center" id="board" ng-click="doClick(h, $event)"
                                  ng-dblclick="doDblClick(h, $event)">
@@ -24,25 +26,7 @@
   </tr>
 </table>
 
-<p>Log: {{log}}</p>
-<p>Server Log: {{serverlog}}</p>
-
-<table>
-  <tr>
-    <th>Title</th>
-    <th>Body</th>
-  </tr>
-  <tr>
-    <td colspan="2">
-      Title: <input type="text" ng-model="title" />
-      Body: <input type="text" ng-model="body" />
-      <button ng-click="addNote()">Add note</button>
-    </td>
-  </tr>
-  <tr ng-repeat="note in notes">
-    <td>{{note.title}}</td>
-    <td>{{note.body}}</td>
-  </tr>
-</table>
-
-<button ng-repeat="note in notes" ng-click="removeNote(note)">Remove Note</button>
+<div align="center">
+  <p>Log: {{log}}</p>
+  <p>Server Log: {{serverlog}}</p>
+</div>

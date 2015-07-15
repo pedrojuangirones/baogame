@@ -13,7 +13,7 @@ var AppController = function($scope) {
     $scope.log ='click ' + event.target.id;
 
     $scope.drawClick(event.target);
-      socket.emit('newmove','oneClick:' + event.target.id);
+    sendMove('oneClick:' + event.target.id, socket);
 
   }
 
@@ -28,16 +28,17 @@ var AppController = function($scope) {
     $scope.name = data.name;
   });
 
-  socket.on('newmove', function (move) {
+  socket.on('servermove', function (move) {
   //  $scope.serverlog= 'new move ' + move;
 
     $scope.arguments = move.split(":");
     $scope.canvasID = $scope.arguments[1];
-    $scope.serverlog= 'canvas ' + $scope.canvasID;
+    $scope.serverlog= 'canvasf ' + $scope.canvasID;
+
     $scope.canvas = document.getElementById($scope.canvasID);
 
     if ($scope.arguments[0]==="oneClick") {
-      drawClick($scope.canvas);
+      $scope.drawClick($scope.canvas);
     } else if ($scope.arguments[0]==="dblClick") {
       clearHouse($scope.canvas);
     }
@@ -64,27 +65,6 @@ var AppController = function($scope) {
 
     drawCircle(canvas);
   }
-
-  socket.on('list', function (documents) {
-    $scope.$apply(function () {
-      $scope.notes = documents;
-    });
-  });
-
-  socket.on('newNote', function (note) {
-    $scope.$apply(function () {
-      $scope.notes.push(note);
-    });
-  });
-
-  socket.on('deletedNote', function (note) {
-    $scope.serverlog ='deletedNote';
-
-    $scope.$apply(function () {
-      var i = $scope.notes.indexOf(note);
-      $scope.notes.splice(i, 1);
-    });
-  });
 }
 
 function sendMove(move, socket) {

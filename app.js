@@ -1,15 +1,19 @@
-var http = require('http'),
-path = require('path');
+var path = require('path');
 
 var express = require('express'),
 app = express();
 
-var server = http.createServer(app);
-io = require('socket.io').listen(server);
+var http = require('http').Server(app);
+var io = require('socket.io')(http);
+app.set('port', process.env.PORT || 5000);
+http.listen(app.get('port'), function(){
+  console.log('listening on port: ', app.get('port'));
+});
+
+
 
 var expressLayouts = require('express-ejs-layouts');
 
-server.listen(3000);
 var notes = require('./data/notes');
 
 app.set('view engine', 'ejs');
@@ -22,25 +26,12 @@ app.get('/', function(request, response) {
   response.render('index.ejs');
 });
 
-io.sockets.on('connection', function (socket) {
-  notes.list(function (err, documents) {
-    socket.emit('list', documents);
-  });
-
-  socket.on('addNote', function (note) {
-    notes.create(note.title, note.body, function () {
-      io.sockets.emit('newNote', note);
-    });
-  });
-
-  socket.on('removeNote', function (note) {
-    notes.remove(note._id, function () {
-      io.sockets.emit('deletedNote', note);
-    });
-  });
+io.on('connection', function(socket) {
+  console.log('a user connected');
 
   socket.on('newmove', function(move) {
-    console.log('newmove ' + move);
-    socket.broadcast.emit('newmove' ,  move  );
+    console.log('new move ' + move);
+    socket.broadcast.emit('servermove' ,  move  );
+    //socket.emit('newmove' ,  move  );
   })
 });
