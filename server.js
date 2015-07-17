@@ -14,6 +14,9 @@ http.listen(app.get('port'), function(){
 
 var expressLayouts = require('express-ejs-layouts');
 
+var credentials = require('./data/credentials');
+
+
 /*
 example of how we would retrieve functionality from a script
 located in /public/data/notes.js
@@ -44,10 +47,92 @@ app.get('/', function(request, response) {
 
 io.on('connection', function(socket) {
   console.log('a user connected');
+  credentials.list(function (err, documents) {
+
+  //socket.emit('list', documents);
+  });
+
+/*  socket.on('newuser', function(credential){
+console.log('newuser');
+
+    console.log('register ' + credential.user +' '+ credential.password)
+
+    credentials.create(credential.user, credential.password, function (insertError) {
+      if (insertError=='uniqueViolated') {
+        console.log('Error ' + insertError)
+
+      } else {
+        console.log('No Error ' || null)
+
+      }
+
+      credentials.list(function (err, data) {
+        console.log(data);
+
+      });
+
+    });
+
+  }) */
+
+  socket.on('signup', function(credential){
+
+    console.log('Register ' + credential.user +' '+ credential.password)
+
+    credentials.create(credential.user, credential.password, function (insertError) {
+      if (insertError=='uniqueViolated') {
+        console.log('Error ' + insertError)
+        socket.emit('registrationfailure', insertError);
+      } else {
+        console.log('No Error ' )
+        socket.emit('registrationsuccess', insertError)
+      }
+
+      credentials.list(function (err, data) {
+        var users = [];
+        for (var i=0; i<data.length; i++) {
+          users[i]=data[i].user;
+        }
+        console.log(users);
+
+      });
+
+    });
+
+  })
+  
+
+  /*
+    socket.on('signUp', function(credential){
+
+      console.log('Register ' + credential.user +' '+ credential.password)
+
+      credentials.create(credential.user, credential.password, function (insertError) {
+        if (insertError=='uniqueViolated') {
+          console.log('Error ' + insertError)
+
+        } else {
+          console.log('No Error ' || null)
+        }
+
+        credentials.list(function (err, data) {
+          console.log(data);
+
+        });
+
+      });
+
+    }) */
 
   socket.on('newmove', function(move) {
     console.log('new move ' + move);
     socket.broadcast.emit('servermove' ,  move  );
     //socket.emit('newmove' ,  move  );
   })
+
 });
+
+function confirmSignIn(){
+
+  console.log('Confirmed')
+}

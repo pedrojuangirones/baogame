@@ -16,14 +16,14 @@
   </TD>
   <TD WIDTH=20%>
                 <form name="signInForm">
-                  You are now playing as:<label id='activeUserLabel'>guest</label><br>
+                  You are now playing as: <label id='activeUserLabel'>{{user}}</label><br>
                   <label class="floatLeft">User:</label>
-                          <input type="text" name="userName" id="userNameInput" class="floatRight"/> <br>
+                          <input type="text" ng-model="loginUser"  class="floatRight"/> <br>
                   <label class="floatLeft">Password:</label>
-                  <input type="password" name="password" value="" class="floatRight"/><br><br>
-                  <input type='button' value='Sign in' ng-click='signIn()' />
+                  <input type="password" ng-model="loginPassword" value="" class="floatRight"/><br><br>
+                  <input type='button' value='Log in' ng-click ='logIn()'/>
+                  <input type='button' value='Register' ng-click='register()' />
                   <input type='reset'  value='Reset' />
-                  <input type='button' value='Register' ng-click ='register()'/>
             </form>
                 </TD>
       </TR>
