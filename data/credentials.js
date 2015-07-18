@@ -18,7 +18,8 @@ var credentials = {
     });
   },
   checkPassword: function(aUser, aPassword, callback) {
-    //db.credentials.find({user: aUser}, function(err,data){
+
+    db.credentials.find({user: aUser}, function(err,data){
       /*
       if (aPassword == data.password) {
         callback(true);
@@ -26,7 +27,15 @@ var credentials = {
         calback(false);
       }
 */
-    //})
+      var check;
+      if ( data[0].password == aPassword) {
+        check=true;
+      } else {
+        check=false;
+      }
+        callback(check);
+    })
+
 
 
   },

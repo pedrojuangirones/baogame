@@ -65,10 +65,7 @@
                 <form name="inviteForm">
                 <p>Who is online</p>
                 <select  name="onlineUsers" size="14" style="width: 217px;">
-                  <option id="option2"> user 215 (idle)
-                  <option id="option3"> user 32 (playing)
-                  <option id="option4"> user 404 (playing)
-                  <option id="option5"> user 5 (busy)
+                  <option ng-repeat='user in onUsers'> {{user}}
                 </select><br>
                  <input type='button' value="Invite" ng-click ="invite()"/>
                  <input type='button' value="Block user" ng-click ="blockUser()"/>

@@ -5,13 +5,14 @@ angular.module('baoApp',[
 
    .controller('AppController', function ($scope) {
      var socket = io.connect();
-       $scope.pageTitle ='Bao Game 1';
+       $scope.pageTitle ='Bao Game';
        $scope.log ='';
        $scope.user = 'guest';
        $scope.loginUser = '';
        $scope.loginPassword = '';
 
        $scope.serverlog ='';
+       $scope.onUsers = [];
 
 
        /*
@@ -19,9 +20,15 @@ angular.module('baoApp',[
        */
        $scope.register = function (){
           // $scope.pageTitle  = 'Sign In' ;
+          if ($scope.loginUser=='' ) {
+            alert('User name too short')
+          } else if ( $scope.loginPassword=='')  {
+            alert('Password too short')
+          } else {
            socket.emit('signup', {user: $scope.loginUser, password : $scope.loginPassword})
            $scope.loginUser = '';
            $scope.loginPassword = '';
+         }
 
        }
 
@@ -34,6 +41,34 @@ angular.module('baoApp',[
        socket.on('registrationsuccess', function(msg) {
          $scope.serverlog ='registrationsuccess';
        });
+
+       $scope.logIn = function (){
+          // $scope.pageTitle  = 'Sign In' ;
+          if (($scope.loginUser=='' ) || ( $scope.loginPassword=='')){
+            alert('Wrong user or password')
+          } else {
+            socket.emit('login', {user: $scope.loginUser, password : $scope.loginPassword})
+            $scope.loginUser = '';
+            $scope.loginPassword = '';
+          }
+       };
+
+       socket.on('loginfailure', function(errMsg) {
+         $scope.serverlog ='loginfailure';
+         alert('Failed to log in. Wrong user or password' + errMsg);
+       });
+       socket.on('loginOK', function(errMsg) {
+         $scope.serverlog ='loginOK';
+         $scope.user = errMsg
+//         alert('Failed to log in. Wrong user or password' + errMsg);
+       });
+       socket.on('usersOnLine', function(userList) {
+         for (var i=0; i<userList.length; i++) {
+           $scope.onUsers[i]=userList[i];
+         }
+       });
+
+
 
 
        $scope.invite = function (){

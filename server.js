@@ -45,35 +45,15 @@ app.get('/', function(request, response) {
   response.render('index.ejs');
 });
 
+
+var usersOnLine = [];
+
 io.on('connection', function(socket) {
   console.log('a user connected');
   credentials.list(function (err, documents) {
 
   //socket.emit('list', documents);
   });
-
-/*  socket.on('newuser', function(credential){
-console.log('newuser');
-
-    console.log('register ' + credential.user +' '+ credential.password)
-
-    credentials.create(credential.user, credential.password, function (insertError) {
-      if (insertError=='uniqueViolated') {
-        console.log('Error ' + insertError)
-
-      } else {
-        console.log('No Error ' || null)
-
-      }
-
-      credentials.list(function (err, data) {
-        console.log(data);
-
-      });
-
-    });
-
-  }) */
 
   socket.on('signup', function(credential){
 
@@ -96,33 +76,34 @@ console.log('newuser');
         console.log(users);
 
       });
-
     });
-
   })
-  
 
-  /*
-    socket.on('signUp', function(credential){
 
-      console.log('Register ' + credential.user +' '+ credential.password)
 
-      credentials.create(credential.user, credential.password, function (insertError) {
-        if (insertError=='uniqueViolated') {
-          console.log('Error ' + insertError)
+    socket.on('login', function(credential){
 
-        } else {
-          console.log('No Error ' || null)
-        }
+      console.log('login ' + credential.user +' '+ credential.password)
 
-        credentials.list(function (err, data) {
-          console.log(data);
+      credentials.checkPassword(credential.user, credential.password, function (checkOK) {
 
-        });
+
+          if (checkOK) {
+            socket.emit('loginOK', credential.user);
+            console.log('loginOK ' + credential.user);
+            usersOnLine.push(credential.user);
+            console.log(usersOnLine);
+            socket.emit('usersOnLine',usersOnLine)
+
+          } else {
+            socket.emit('loginfailure', credential.user);
+            console.log('loginfailure ' + credential.user);
+          }
+
 
       });
 
-    }) */
+    })
 
   socket.on('newmove', function(move) {
     console.log('new move ' + move);
@@ -132,7 +113,10 @@ console.log('newuser');
 
 });
 
-function confirmSignIn(){
+function activateUser(user,socket){
+  //socket.emit('loginsuccess', user);
+  console.log (usersOnLine);
 
-  console.log('Confirmed')
+
+  console.log('Confirmed ' + user)
 }
