@@ -43,19 +43,18 @@ angular.module('baoApp',[
        });
 
        $scope.logIn = function (){
-          // $scope.pageTitle  = 'Sign In' ;
-          if (($scope.loginUser=='' ) || ( $scope.loginPassword=='')){
-            alert('Wrong user or password')
-          } else {
+          //if (($scope.loginUser=='' ) || ( $scope.loginPassword=='')){
+          //  alert('Wrong user or password')
+          //} else {
             socket.emit('login', {user: $scope.loginUser, password : $scope.loginPassword})
             $scope.loginUser = '';
             $scope.loginPassword = '';
-          }
+          //}
        };
 
        socket.on('loginfailure', function(errMsg) {
          $scope.serverlog ='loginfailure';
-         alert('Failed to log in. Wrong user or password' + errMsg);
+         alert('Failed to log in: ' + errMsg);
        });
        socket.on('loginOK', function(errMsg) {
          $scope.serverlog ='loginOK';
@@ -73,10 +72,14 @@ angular.module('baoApp',[
 
        $scope.invite = function (){
                $scope.pageTitle = 'Invite' ;
-
-           document.outputForm.outputText.value="Invite player: "  +
-                   document.inviteForm.onlineUsers[document.inviteForm.onlineUsers.selectedIndex].value;
+               //alert('selected' + document.inviteForm.onlineUsers.selectedIndex)
+         var invitee = document.inviteForm.onlineUsers[document.inviteForm.onlineUsers.selectedIndex].value;
+         socket.emit('invitation', invitee);
        }
+
+       socket.on('invitation', function(host) {
+         alert('invitation from ' + host);
+       })
 
        $scope.cancelInvite = function (){
              $scope.pageTitle = 'Cancel Invite' ;

@@ -64,7 +64,7 @@ io.on('connection', function(socket) {
         console.log('Error ' + insertError)
         socket.emit('registrationfailure', insertError);
       } else {
-        console.log('No Error ' )
+        console.log(credential.user +' registered ' )
         socket.emit('registrationsuccess', insertError)
       }
 
@@ -84,26 +84,35 @@ io.on('connection', function(socket) {
     socket.on('login', function(credential){
 
       console.log('login ' + credential.user +' '+ credential.password)
-
-      credentials.checkPassword(credential.user, credential.password, function (checkOK) {
-
-
+      var alreadyOnline = false;
+      for (var i=0; i<usersOnLine.length; i++) {
+        if (credential.user===usersOnLine[i]) alreadyOnline =true;
+      }
+      if (alreadyOnline) {
+        console.log('Already logged in');
+        socket.emit('loginfailure', 'Already logged in');
+      } else {
+        credentials.checkPassword(credential.user, credential.password, function (checkOK) {
           if (checkOK) {
+            socket.username = credential.user;
             socket.emit('loginOK', credential.user);
             console.log('loginOK ' + credential.user);
-            usersOnLine.push(credential.user);
+            usersOnLine.push({credential.user});
             console.log(usersOnLine);
             socket.emit('usersOnLine',usersOnLine)
-
+            socket.broadcast.emit('usersOnLine',usersOnLine)
           } else {
-            socket.emit('loginfailure', credential.user);
+            socket.emit('loginfailure', 'Wrong user or password');
             console.log('loginfailure ' + credential.user);
           }
+       });
+     }
+  })
 
-
-      });
-
-    })
+  socket.on('invitation', function(invitee){
+    console.log('invitation from ' + socket.username+ ' to ' + invitee)
+    socket.invitee.emit('invitation', socket.username);
+  })
 
   socket.on('newmove', function(move) {
     console.log('new move ' + move);
@@ -111,6 +120,9 @@ io.on('connection', function(socket) {
     //socket.emit('newmove' ,  move  );
   })
 
+  socket.on('disconnect', function() {
+    console.log('user disconected' + socket.username);
+  })
 });
 
 function activateUser(user,socket){
