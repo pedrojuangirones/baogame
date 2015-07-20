@@ -16,7 +16,7 @@ angular.module('baoApp',[
        $scope.gameHosts = [];
 
        $scope.selectedHost='';
-
+       $scope.invitesMade = [];
 
 
 
@@ -84,8 +84,15 @@ angular.module('baoApp',[
 
        $scope.invite = function (){
          var invitee=$scope.onUsers[document.inviteForm.onlineUsers.selectedIndex];
-         socket.emit('invitation', {fromUser:$scope.user, toUser:invitee});
 
+         for (var i=0; i<$scope.invitesMade.length; i++) {
+           if ($scope.invitesMade[i]==invitee) {
+             alert('You have already invited' + invitee)
+             return false;
+           }
+         }
+         socket.emit('invitation', {fromUser:$scope.user, toUser:invitee});
+         $scope.invitesMade.push(invitee)
        };
 
 
@@ -94,13 +101,41 @@ angular.module('baoApp',[
          if ($scope.user == invitationCard.toUser) {
            $scope.gameHosts.push(invitationCard.fromUser);
          }
-       })
+       });
 
        $scope.cancelInvite = function (){
-             $scope.pageTitle = 'Cancel Invite' ;
-             document.outputForm.outputText.value="Cancel Invite" +
-                     document.inviteForm.invitesMade[document.inviteForm.invitesMade.selectedIndex].value;;
+
+         if (document.inviteForm.invitesMade.selectedIndex == -1) {
+           alert('No invitation selected')
+           return false;
+         } else {
+           var invitee = $scope.invitesMade[document.inviteForm.invitesMade.selectedIndex];
+           socket.emit('cancelInvitation', {fromUser:$scope.user, toUser:invitee});
+           $scope.invitesMade.splice(document.inviteForm.invitesMade.selectedIndex,1);
          }
+
+       }
+
+       socket.on('cancelInvitation', function(invitationCard) {
+
+         if ($scope.user == invitationCard.toUser) {
+           for (var i=0; i<$scope.gameHosts.length; i++) {
+             if ($scope.gameHosts[i]==invitationCard.fromUser) {
+               $scope.gameHosts.splice(i,1);
+             }
+           }
+         }
+
+         for (var i=0; i<$scope.invitesMade.length; i++) {
+           alert('in invite loop');
+           if ($scope.invitesMade[i]==invitee) {
+             alert('You have already invited' + invitee)
+             return false;
+           }
+         }
+
+
+       })
 
        $scope.blockUser = function (){
              $scope.pageTitle = 'Block User' ;

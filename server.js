@@ -119,6 +119,12 @@ io.on('connection', function(socket) {
     socket.broadcast.emit('invitation', invitationCard);
   })
 
+  socket.on('cancelInvitation', function(invitationCard){
+    console.log('Cancel invitation: from ' + invitationCard.fromUser + ' to ' + invitationCard.toUser);
+    socket.broadcast.emit('cancelInvitation', invitationCard);
+  })
+
+
   socket.on('newmove', function(move) {
     console.log('new move ' + move);
     socket.broadcast.emit('servermove' ,  move  );

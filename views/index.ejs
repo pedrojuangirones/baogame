@@ -74,7 +74,7 @@
                 <p >
                   You have invited: <br>
                 <select  name="invitesMade" size="3" style="width: 217px;">
-                  <option id="option3"> user 3
+                  <option ng-repeat='aInvite in invitesMade'> {{aInvite}}
                 </select>
                  </p>
                  <input type='button' value="Cancel Invite" ng-click ="cancelInvite()"/>
