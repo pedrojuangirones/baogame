@@ -22,6 +22,7 @@
                   <label class="floatLeft">Password:</label>
                   <input type="password" ng-model="loginPassword" value="" class="floatRight"/><br><br>
                   <input type='button' value='Log in' ng-click ='logIn()'/>
+                  <input type='button' value='Log out' ng-click ='logOut()'/>
                   <input type='button' value='Register' ng-click='register()' />
                   <input type='reset'  value='Reset' />
             </form>
@@ -64,8 +65,8 @@
               <TD WIDTH=20%>
                 <form name="inviteForm">
                 <p>Who is online</p>
-                <select  name="onlineUsers" size="14" style="width: 217px;">
-                  <option ng-repeat='user in onUsers'> {{user}}
+                <select  name="onlineUsers" size="14" style="width: 217px;" ng-model='selectedUser'>
+                  <option ng-repeat='aUser in onUsers'> {{aUser}}
                 </select><br>
                  <input type='button' value="Invite" ng-click ="invite()"/>
                  <input type='button' value="Block user" ng-click ="blockUser()"/>
@@ -80,9 +81,8 @@
 
                 <p >
                   You have an invitation from: <br>
-                <select  name="invitesReceived" size="3" style="width: 217px;">
-                  <option id="option1"> user 25 (playing)
-                  <option id="option2"> user 31 (playing)
+                <select  name="invitesReceived" size="3" style="width: 217px;" ng-model='selectedHost'>
+                  <option ng-repeat='aHost in gameHosts'> {{aHost}}
                 </select>
                  <input type='button' value="Accept and start" ng-click ="acceptInvite()"/>
                  <input type='button' value="Decline" ng-click ="declineInvite()"/>
@@ -94,12 +94,9 @@
 </TABLE>
 
 <div align="center">
-  <p>Log: {{log}}</p>
-  <p>Server Log: {{serverlog}}</p>
-</div>
-  <p align='center'>
+  <p>Log: {{log}}    // Server Log: {{serverlog}}<br>
   <form name="outputForm">
-        <input type='text'  size='40' name="outputText">
+        <input type='text'  size='40' name="outputText" >
 
-  </form>
-  </p>
+  </form><p>
+  </div>

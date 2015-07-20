@@ -13,6 +13,11 @@ angular.module('baoApp',[
 
        $scope.serverlog ='';
        $scope.onUsers = [];
+       $scope.gameHosts = [];
+
+       $scope.selectedHost='';
+
+
 
 
        /*
@@ -43,42 +48,52 @@ angular.module('baoApp',[
        });
 
        $scope.logIn = function (){
-          //if (($scope.loginUser=='' ) || ( $scope.loginPassword=='')){
-          //  alert('Wrong user or password')
-          //} else {
+          if (($scope.loginUser=='' ) || ( $scope.loginPassword=='')){
+            alert('Wrong user or password')
+          } else {
             socket.emit('login', {user: $scope.loginUser, password : $scope.loginPassword})
             $scope.loginUser = '';
             $scope.loginPassword = '';
-          //}
+          }
        };
 
        socket.on('loginfailure', function(errMsg) {
          $scope.serverlog ='loginfailure';
          alert('Failed to log in: ' + errMsg);
        });
-       socket.on('loginOK', function(errMsg) {
+
+       socket.on('loginOK', function(user) {
          $scope.serverlog ='loginOK';
-         $scope.user = errMsg
-//         alert('Failed to log in. Wrong user or password' + errMsg);
+         $scope.user = user
        });
+
        socket.on('usersOnLine', function(userList) {
+         $scope.onUsers = [];
          for (var i=0; i<userList.length; i++) {
-           $scope.onUsers[i]=userList[i];
+           if ($scope.user !== userList[i]) {
+             $scope.onUsers.push(userList[i]);
+           }
          }
        });
 
+       $scope.logOut = function (){
+            socket.emit('logout', $scope.user)
+            $scope.user = 'Guest';
 
-
+       };
 
        $scope.invite = function (){
-               $scope.pageTitle = 'Invite' ;
-               //alert('selected' + document.inviteForm.onlineUsers.selectedIndex)
-         var invitee = document.inviteForm.onlineUsers[document.inviteForm.onlineUsers.selectedIndex].value;
-         socket.emit('invitation', invitee);
-       }
+         var invitee=$scope.onUsers[document.inviteForm.onlineUsers.selectedIndex];
+         socket.emit('invitation', {fromUser:$scope.user, toUser:invitee});
 
-       socket.on('invitation', function(host) {
-         alert('invitation from ' + host);
+       };
+
+
+
+       socket.on('invitation', function(invitationCard) {
+         if ($scope.user == invitationCard.toUser) {
+           $scope.gameHosts.push(invitationCard.fromUser);
+         }
        })
 
        $scope.cancelInvite = function (){
@@ -95,6 +110,7 @@ angular.module('baoApp',[
 
 
        $scope.acceptInvite = function (){
+
              $scope.pageTitle = 'Accept' ;
              document.outputForm.outputText.value="Accept invite from user: " +
                 document.inviteForm.invitesReceived[document.inviteForm.invitesReceived.selectedIndex].value;
@@ -112,7 +128,7 @@ game functions
        $scope.board = {};
        $scope.board.fields=['1','2'];
        $scope.board.rows = ['1', '2'];
-       $scope.board.houses = ['1', '2', '3','4','5'];
+       $scope.board.houses = ['1', '2', '3','4','5','6'];
 
        $scope.doClick = function(item, event) {
          $scope.log ='click ' + event.target.id;

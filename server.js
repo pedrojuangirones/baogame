@@ -97,7 +97,7 @@ io.on('connection', function(socket) {
             socket.username = credential.user;
             socket.emit('loginOK', credential.user);
             console.log('loginOK ' + credential.user);
-            usersOnLine.push({credential.user});
+            usersOnLine.push(credential.user);
             console.log(usersOnLine);
             socket.emit('usersOnLine',usersOnLine)
             socket.broadcast.emit('usersOnLine',usersOnLine)
@@ -109,9 +109,14 @@ io.on('connection', function(socket) {
      }
   })
 
-  socket.on('invitation', function(invitee){
-    console.log('invitation from ' + socket.username+ ' to ' + invitee)
-    socket.invitee.emit('invitation', socket.username);
+  socket.on('logout', function(user){
+    console.log('Log out ' + user);
+    logoutUser(user,socket)
+  })
+
+  socket.on('invitation', function(invitationCard){
+    console.log('Invitation: from ' + invitationCard.fromUser + ' to ' + invitationCard.toUser);
+    socket.broadcast.emit('invitation', invitationCard);
   })
 
   socket.on('newmove', function(move) {
@@ -122,9 +127,20 @@ io.on('connection', function(socket) {
 
   socket.on('disconnect', function() {
     console.log('user disconected' + socket.username);
+    logoutUser(socket.username|| 'guest', socket);
+    console.log(usersOnLine);
   })
 });
 
+function logoutUser(user, socket) {
+  for (var i=0; i<usersOnLine.length; i++) {
+    if (user == usersOnLine[i]) {
+      usersOnLine.splice(i,1);
+    }
+  }
+  socket.broadcast.emit('usersOnLine',usersOnLine)
+
+}
 function activateUser(user,socket){
   //socket.emit('loginsuccess', user);
   console.log (usersOnLine);
