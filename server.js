@@ -15,6 +15,7 @@ http.listen(app.get('port'), function(){
 var expressLayouts = require('express-ejs-layouts');
 
 var credentials = require('./data/credentials');
+var blockedUsers = require('./data/blockedUsers');
 
 
 /*
@@ -65,7 +66,8 @@ io.on('connection', function(socket) {
         socket.emit('registrationfailure', insertError);
       } else {
         console.log(credential.user +' registered ' )
-        socket.emit('registrationsuccess', insertError)
+        blockedUsers.create(credential.user), function(insertError) {}
+        socket.emit('registrationsuccess', credential) //{user: credential.user, password: credential.password}
       }
 
       credentials.list(function (err, data) {

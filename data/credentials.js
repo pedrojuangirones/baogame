@@ -20,20 +20,18 @@ var credentials = {
   checkPassword: function(aUser, aPassword, callback) {
 
     db.credentials.find({user: aUser}, function(err,data){
-      /*
-      if (aPassword == data.password) {
-        callback(true);
-      } else {
-        calback(false);
-      }
-*/
       var check;
-      if ( data[0].password == aPassword) {
-        check=true;
+      if (data[0]) {
+        console.log('User found = true' );
+        if ( data[0].password == aPassword) {
+          check=true;
+        } else {
+          check=false;
+        }
       } else {
-        check=false;
+        console.log('User found = false' );
       }
-        callback(check);
+      callback(check);
     })
 
 
