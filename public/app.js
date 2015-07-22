@@ -21,6 +21,7 @@ angular.module('baoApp',[
        $scope.invitesMade = [];
        $scope.inviteAccepted = '';
 
+       var gameID = '';
 
 
        /*
@@ -188,11 +189,32 @@ angular.module('baoApp',[
 
        $scope.acceptInvite = function (){
          if (!checkConnected($scope.connected)) return;
-
-             $scope.pageTitle = 'Accept' ;
-             document.outputForm.outputText.value="Accept invite from user: " +
-                document.inviteForm.invitesReceived[document.inviteForm.invitesReceived.selectedIndex].value;
+         if (document.inviteForm.invitesReceived.selectedIndex == -1) {
+           alert('No invitation selected')
+           return false;
+         } else {
+           var gameHost = $scope.invitesReceived[document.inviteForm.invitesReceived.selectedIndex];
+           socket.emit('acceptinvitation', {fromUser:gameHost, toUser:$scope.user});
          }
+         gameID=gameHost + '-' + $scope.user;
+         alert('gameID in guest = ' + gameID )
+         $scope.log = "Playing"
+         $scope.$apply();
+         }
+
+      socket.on('invitationaccepted', function(invitationCard){
+           if ($scope.user == invitationCard.fromUser) {
+             alert(invitationCard.toUser +' has accepted your invitation to play')
+             gameID = invitationCard.fromUser + '-' + invitationCard.toUser;
+             socket.emit('startgame', gameID);
+           }
+           for (var i=0; i<$scope.invitesMade.length; i++) {
+             socket.emit('cancelInvitation', {fromUser:$scope.user, toUser:$scope.invitesMade[i]});
+           }
+           $scope.invitesMade=[];
+           $scope.log = "Finally playing"
+           $scope.$apply();
+       })
 
        $scope.declineInvite = function (){
          if (!checkConnected($scope.connected)) return;
@@ -229,35 +251,55 @@ game functions
        $scope.board.houses = ['1', '2', '3','4','5','6'];
 
        $scope.doClick = function(item, event) {
+         if (gameID=='') {
+           alert('You are not playing')
+           return false;
+         }
+
          $scope.log ='click ' + event.target.id;
 
          drawClick(event.target);
-         sendMove('oneClick:' + event.target.id, socket);
+         //alert('oneClick:' + event.target.id)
+         sendMove({type:'oneClick' , targetID: event.target.id}, socket);
        }
 
        $scope.doDblClick = function (item, event) {
+         if (gameID=='') {
+           alert('You are not playing')
+           return false;
+         }
+
          $scope.log ='Dblclick ' + event.target.id;
          clearHouse(event.target);
-         sendMove('dblClick:' + event.target.id, socket);
+         sendMove({type:'dblClick' , targetID: event.target.id}, socket);
          //alert("dbl clicked: " + event.target.id);
        }
 
        socket.on('servermove', function (move) {
        //  $scope.serverlog= 'new move ' + move;
+         var canvas = document.getElementById(move.targetID);
+         if (move.type === "oneClick") {
+           drawClick(canvas);
+         } else {
+           clearHouse(canvas);
 
-         $scope.arguments = move.split(":");
-         $scope.canvasID = $scope.arguments[1];
-         $scope.serverlog= 'canvasf ' + $scope.canvasID;
-
-         $scope.canvas = document.getElementById($scope.canvasID);
-
-         if ($scope.arguments[0]==="oneClick") {
-           drawClick($scope.canvas);
-         } else if ($scope.arguments[0]==="dblClick") {
-           clearHouse($scope.canvas);
          }
-
+         $scope.serverlog= 'canvas ' + move.targetID;
        });
+
+     function sendMove(move, socket) {
+       if (gameID=='') {
+         alert('You are not playing')
+         return false;
+       }
+       //alert('move is game:' + gameID + ' move: ' +move );
+       socket.emit('newmove', {game: gameID, move:move});
+     }
+
+     function drawClick(canvas) {
+       drawCircle(canvas);
+     }
+
    });
 
    function checkConnected(check){
@@ -268,11 +310,4 @@ game functions
       return false;
      }
 
-   }
-   function sendMove(move, socket) {
-     socket.emit('newmove', move);
-   }
-
-   function drawClick(canvas) {
-     drawCircle(canvas);
    }

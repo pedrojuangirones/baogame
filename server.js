@@ -131,6 +131,20 @@ io.on('connection', function(socket) {
     socket.broadcast.emit('declineinvitation', invitationCard);
   })
 
+  socket.on('acceptinvitation', function(invitationCard){
+    console.log('Invitation accepted: from ' + invitationCard.fromUser + ' by ' + invitationCard.toUser);
+    var gameID = invitationCard.fromUser + '-' + invitationCard.toUser;
+    socket.join(gameID);
+    console.log('User ' +socket.username + ' has joined game' + gameID)
+
+    socket.broadcast.emit('invitationaccepted', invitationCard);
+  })
+
+  socket.on('startgame', function(gameID){
+    console.log('User ' +socket.username + ' has joined game' + gameID)
+    socket.join(gameID);
+  })
+
 /*
 BLOCK user
 */
@@ -154,9 +168,8 @@ UNBLOCK user
   })
 
   socket.on('newmove', function(move) {
-    console.log('new move ' + move);
-    socket.broadcast.emit('servermove' ,  move  );
-    //socket.emit('newmove' ,  move  );
+    console.log('new move -- game:' + move.game + ' move: ' + move.move );
+    socket.to(move.game).broadcast.emit('servermove' ,  move.move  );
   })
 
   socket.on('disconnect', function() {

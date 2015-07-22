@@ -3,7 +3,7 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 */
-/* 
+/*
     Created on : 25-may-2015, 14:16:08
     Author     : PJ
 */
@@ -19,7 +19,7 @@ html {
   font-family: 'Ravi Prakash', cursive;
   */
   font-family: 'Caesar Dressing', cursive;
-  
+
 }
 
 body {
@@ -36,13 +36,13 @@ h1 {
 
   text-align: center;
   margin: 0;
-  padding: 0px 0;    
+  padding: 0px 0;
   color: #3D1F00;
   //text-shadow: 13px 13px 1px black;
 }
 
 p {
-  font-size: 16px;    
+  font-size: 16px;
   letter-spacing: 1px;
     color: #3D1F00;
 
@@ -89,6 +89,18 @@ img {
 }
 
 form {
-  
+
 }
 
+.doNoSelect {
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+}
+
+
+canvas {
+  border:2px solid red;border-radius:8px}
