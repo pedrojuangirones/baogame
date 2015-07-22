@@ -66,7 +66,7 @@ io.on('connection', function(socket) {
         socket.emit('registrationfailure', insertError);
       } else {
         console.log(credential.user +' registered ' )
-        blockedUsers.create(credential.user), function(insertError) {}
+        blockedUsers.create(credential.user, function(insertError) {})
         socket.emit('registrationsuccess', credential) //{user: credential.user, password: credential.password}
       }
 
@@ -126,6 +126,32 @@ io.on('connection', function(socket) {
     socket.broadcast.emit('cancelInvitation', invitationCard);
   })
 
+  socket.on('declineinvitation', function(invitationCard){
+    console.log('Invitation declined: from ' + invitationCard.fromUser + ' by ' + invitationCard.toUser);
+    socket.broadcast.emit('declineinvitation', invitationCard);
+  })
+
+/*
+BLOCK user
+*/
+  socket.on('blockuser', function(blockRequest){
+    console.log('Block request from ' + blockRequest.fromUser
+    + ' to ' + blockRequest.blockedUser)
+    blockedUsers.add(blockRequest, function (blockedUsersList) {
+      socket.emit('blockedusers', blockedUsersList);
+      })
+    })
+/*
+UNBLOCK user
+*/
+  socket.on('unblockuser', function(unBblockRequest){
+    console.log('Unblock request from ' + unBblockRequest.fromUser
+        + ' to ' + unBblockRequest.blockedUser);
+    blockedUsers.removeBlock(unBblockRequest, function (blockedUsersList) {
+      console.log('in callbak from unBlockedUsers.remove ' + blockedUsersList)
+      socket.emit('blockedusers', blockedUsersList);
+    })
+  })
 
   socket.on('newmove', function(move) {
     console.log('new move ' + move);

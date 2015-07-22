@@ -14,7 +14,8 @@ angular.module('baoApp',[
 
        $scope.serverlog ='';
        $scope.onUsers = [];
-       $scope.gameHosts = [];
+       $scope.blockedUsers = [];
+       $scope.invitesReceived = [];
 
        $scope.selectedHost='';
        $scope.invitesMade = [];
@@ -89,7 +90,7 @@ angular.module('baoApp',[
          socket.emit('logout', $scope.user)
          $scope.user = 'guest';
          $scope.onUsers = [];
-         $scope.gameHosts = [];
+         $scope.invitesReceived = [];
          $scope.selectedHost='';
          $scope.invitesMade = [];
          $scope.inviteAccepted = '';
@@ -116,7 +117,7 @@ angular.module('baoApp',[
 
        socket.on('invitation', function(invitationCard) {
          if ($scope.user == invitationCard.toUser) {
-           $scope.gameHosts.push(invitationCard.fromUser);
+           $scope.invitesReceived.push(invitationCard.fromUser);
          }
          $scope.$apply();
        });
@@ -137,32 +138,53 @@ angular.module('baoApp',[
        socket.on('cancelInvitation', function(invitationCard) {
 
          if ($scope.user == invitationCard.toUser) {
-           for (var i=0; i<$scope.gameHosts.length; i++) {
-             if ($scope.gameHosts[i]==invitationCard.fromUser) {
-               $scope.gameHosts.splice(i,1);
+           for (var i=0; i<$scope.invitesReceived.length; i++) {
+             if ($scope.invitesReceived[i]==invitationCard.fromUser) {
+               $scope.invitesReceived.splice(i,1);
              }
            }
          }
 
-         for (var i=0; i<$scope.invitesMade.length; i++) {
-           if ($scope.invitesMade[i]==invitee) {
-             alert('You have already invited' + invitee)
-             return false;
-           }
-         }
          $scope.$apply();
        })
 
        $scope.blockUser = function (){
          if (!checkConnected($scope.connected)) return;
-
-         alert('This functionality is not implemented yet')
-
-             $scope.pageTitle = 'Block User' ;
-             document.outputForm.outputText.value="Block user: " +
-                document.inviteForm.onlineUsers[document.inviteForm.onlineUsers.selectedIndex].value;
+         if (document.inviteForm.onlineUsers.selectedIndex == -1) {
+           alert('No User selected')
+           return false;
+         } else {
+           var userToBlock = $scope.onUsers[document.inviteForm.onlineUsers.selectedIndex];
+           socket.emit('blockuser', {fromUser:$scope.user, blockedUser:userToBlock});
          }
+       }
 
+       socket.on('blockedusers', function(blockedusers) {
+         $scope.blockedUsers=[];
+         for (var j=0; j<blockedusers.length; j++) {
+           $scope.blockedUsers[j]=blockedusers[j];
+         }
+         for (var i=0; i<$scope.onUsers.length; i++) {
+           var user=$scope.onUsers[i].split(' ')[0];
+           if ($scope.blockedUsers.indexOf(user) > -1 ) {
+             $scope.onUsers[i]= user + ' (blocked)';
+           } else {
+             $scope.onUsers[i]= user;
+           }
+         }
+       $scope.$apply();
+       })
+
+       $scope.unBlockUser = function() {
+         if (!checkConnected($scope.connected)) return;
+         if (document.inviteForm.onlineUsers.selectedIndex == -1) {
+           alert('No User selected')
+           return false;
+         } else {
+           var userToUnBlock = $scope.onUsers[document.inviteForm.onlineUsers.selectedIndex].split(' ')[0];
+           socket.emit('unblockuser', {fromUser:$scope.user, blockedUser:userToUnBlock});
+         }
+       }
 
        $scope.acceptInvite = function (){
          if (!checkConnected($scope.connected)) return;
@@ -174,11 +196,29 @@ angular.module('baoApp',[
 
        $scope.declineInvite = function (){
          if (!checkConnected($scope.connected)) return;
-
-             $scope.pageTitle = 'Decline' ;
-             document.outputForm.outputText.value="Decline invite from user: " +
-                document.inviteForm.invitesReceived[document.inviteForm.invitesReceived.selectedIndex].value;
+         if (document.inviteForm.invitesReceived.selectedIndex == -1) {
+           alert('No invitation selected')
+           return false;
+         } else {
+           var gameHost = $scope.invitesReceived[document.inviteForm.invitesReceived.selectedIndex];
+           socket.emit('declineinvitation', {fromUser:gameHost, toUser:$scope.user});
+           $scope.invitesReceived.splice(document.inviteForm.invitesReceived.selectedIndex,1);
          }
+         $scope.$apply();
+       }
+
+       socket.on('declineinvitation', function(invitationCard){
+         if ($scope.user == invitationCard.fromUser) {
+           alert(invitationCard.toUser +' has declined your invitation to play')
+           for (var i=0; i<$scope.invitesMade.length; i++) {
+             if ($scope.invitesMade[i]==invitationCard.toUser) {
+               $scope.invitesMade.splice(i,1);
+             }
+           }
+         }
+         $scope.$apply();
+       })
+
 /*
 game functions
 */

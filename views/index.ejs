@@ -70,6 +70,7 @@
                 </select><br>
                  <input type='button' value="Invite" ng-click ="invite()"/>
                  <input type='button' value="Block user" ng-click ="blockUser()" enabled="false"/>
+                 <input type='button' value="Unblock user" ng-click ="unBlockUser()" enabled="false"/>
 
                 <p >
                   You have invited: <br>
@@ -82,7 +83,7 @@
                 <p >
                   You have an invitation from: <br>
                 <select  name="invitesReceived" size="3" style="width: 217px;" ng-model='selectedHost'>
-                  <option ng-repeat='aHost in gameHosts'> {{aHost}}
+                  <option ng-repeat='invite in invitesReceived'> {{invite}}
                 </select>
                  <input type='button' value="Accept and start" ng-click ="acceptInvite()"/>
                  <input type='button' value="Decline" ng-click ="declineInvite()"/>
