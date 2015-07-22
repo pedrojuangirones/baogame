@@ -118,7 +118,12 @@ angular.module('baoApp',[
 
        socket.on('invitation', function(invitationCard) {
          if ($scope.user == invitationCard.toUser) {
-           $scope.invitesReceived.push(invitationCard.fromUser);
+           /*
+           check if user is not blocked
+           */
+           if ($scope.blockedUsers.indexOf(invitationCard.fromUser) == -1 ) {
+             $scope.invitesReceived.push(invitationCard.fromUser);
+           }
          }
          $scope.$apply();
        });

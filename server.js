@@ -103,6 +103,11 @@ io.on('connection', function(socket) {
             console.log(usersOnLine);
             socket.emit('usersOnLine',usersOnLine)
             socket.broadcast.emit('usersOnLine',usersOnLine)
+
+            blockedUsers.sublist(credential.user, function (blockedUsersList) {
+              console.log('blocked users for ' + credential.user + ':' + blockedUsersList);
+              socket.emit('blockedusers', blockedUsersList);
+            })
           } else {
             socket.emit('loginfailure', 'Wrong user or password');
             console.log('loginfailure ' + credential.user);
@@ -118,7 +123,15 @@ io.on('connection', function(socket) {
 
   socket.on('invitation', function(invitationCard){
     console.log('Invitation: from ' + invitationCard.fromUser + ' to ' + invitationCard.toUser);
-    socket.broadcast.emit('invitation', invitationCard);
+    blockedUsers.sublist(invitationCard.toUser, function (blockedUsersList) {
+      if (blockedUsersList.indexOf(invitationCard.fromUser) == -1) {
+        console.log('Not Blocked: from ' + invitationCard.fromUser + ' to ' + invitationCard.toUser);
+        socket.broadcast.emit('invitation', invitationCard);
+      } else {
+        console.log('Blocked: from ' + invitationCard.fromUser + ' to ' + invitationCard.toUser);
+        socket.emit('declineinvitation', invitationCard);
+      }
+    })
   })
 
   socket.on('cancelInvitation', function(invitationCard){
