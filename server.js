@@ -67,7 +67,7 @@ io.on('connection', function(socket) {
       } else {
         console.log(credential.user +' registered ' )
         blockedUsers.create(credential.user, function(insertError) {})
-        socket.emit('registrationsuccess', credential) //{user: credential.user, password: credential.password}
+        socket.emit('registrationsuccess', credential)
       }
 
       credentials.list(function (err, data) {
@@ -75,7 +75,7 @@ io.on('connection', function(socket) {
         for (var i=0; i<data.length; i++) {
           users[i]=data[i].user;
         }
-        console.log(users);
+        console.log('All registered users when ' + credential.user + ' registers ' + users);
 
       });
     });
@@ -99,10 +99,17 @@ io.on('connection', function(socket) {
             socket.username = credential.user;
             socket.emit('loginOK', credential.user);
             console.log('loginOK ' + credential.user);
+
             usersOnLine.push(credential.user);
-            console.log(usersOnLine);
+            console.log('user online at login ' + usersOnLine);
             socket.emit('usersOnLine',usersOnLine)
             socket.broadcast.emit('usersOnLine',usersOnLine)
+
+          blockedUsers.sublist(credential.user, function (blockedUsersList) {
+            console.log('Send blocked user list on login ' + blockedUsersList)
+            socket.emit('blockedusers', blockedUsersList);
+            })
+
           } else {
             socket.emit('loginfailure', 'Wrong user or password');
             console.log('loginfailure ' + credential.user);

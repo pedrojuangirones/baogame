@@ -83,7 +83,9 @@ angular.module('baoApp',[
              $scope.onUsers.push(userList[i]);
            }
          }
-         $scope.$apply();
+         updateBlocks();
+
+         //$scope.$apply();
        });
 
        $scope.logOut = function (){
@@ -165,15 +167,7 @@ angular.module('baoApp',[
          for (var j=0; j<blockedusers.length; j++) {
            $scope.blockedUsers[j]=blockedusers[j];
          }
-         for (var i=0; i<$scope.onUsers.length; i++) {
-           var user=$scope.onUsers[i].split(' ')[0];
-           if ($scope.blockedUsers.indexOf(user) > -1 ) {
-             $scope.onUsers[i]= user + ' (blocked)';
-           } else {
-             $scope.onUsers[i]= user;
-           }
-         }
-       $scope.$apply();
+         updateBlocks();
        })
 
        $scope.unBlockUser = function() {
@@ -300,6 +294,18 @@ game functions
        drawCircle(canvas);
      }
 
+     function updateBlocks(){
+       for (var i=0; i<$scope.onUsers.length; i++) {
+         var user=$scope.onUsers[i].split(' ')[0];
+         if ($scope.blockedUsers.indexOf(user) > -1 ) {
+           $scope.onUsers[i]= user + ' (blocked)';
+         } else {
+           $scope.onUsers[i]= user;
+         }
+       }
+     $scope.$apply();
+
+     }
    });
 
    function checkConnected(check){
