@@ -126,17 +126,17 @@ io.on('connection', function(socket) {
 
   socket.on('invitation', function(invitationCard){
     console.log('Invitation: from ' + invitationCard.fromUser + ' to ' + invitationCard.toUser);
-    socket.broadcast.emit('invitation', invitationCard);
+    socket.to(invitationCard.toUser).emit('invitation', invitationCard);
   })
 
   socket.on('cancelInvitation', function(invitationCard){
     console.log('Cancel invitation: from ' + invitationCard.fromUser + ' to ' + invitationCard.toUser);
-    socket.broadcast.emit('cancelInvitation', invitationCard);
+    socket.to(invitationCard.toUser).emit('cancelInvitation', invitationCard);
   })
 
   socket.on('declineinvitation', function(invitationCard){
     console.log('Invitation declined: from ' + invitationCard.fromUser + ' by ' + invitationCard.toUser);
-    socket.broadcast.emit('declineinvitation', invitationCard);
+    socket.to(invitationCard.fromUser).emit('declineinvitation', invitationCard);
   })
 
   socket.on('acceptinvitation', function(invitationCard){
@@ -145,7 +145,7 @@ io.on('connection', function(socket) {
     socket.join(gameID);
     console.log('User ' +socket.username + ' has joined game' + gameID)
 
-    socket.broadcast.emit('invitationaccepted', invitationCard);
+    socket.to(invitationCard.fromUser).emit('invitationaccepted', invitationCard);
   })
 
   socket.on('startgame', function(gameID){

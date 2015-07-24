@@ -199,7 +199,6 @@ angular.module('baoApp',[
            socket.emit('acceptinvitation', {fromUser:gameHost, toUser:$scope.user});
          }
          gameID=gameHost + '-' + $scope.user;
-         alert('gameID in guest = ' + gameID )
          $scope.log = "Playing"
          $scope.$apply();
          }
