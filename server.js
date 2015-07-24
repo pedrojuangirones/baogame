@@ -51,10 +51,8 @@ var usersOnLine = [];
 
 io.on('connection', function(socket) {
   console.log('a user connected');
-  credentials.list(function (err, documents) {
-
-  //socket.emit('list', documents);
-  });
+  socket.emit('reset', '');
+  
 
   socket.on('signup', function(credential){
 

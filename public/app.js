@@ -22,7 +22,7 @@ angular.module('baoApp',[
        $scope.invitesMade = [];
        $scope.inviteAccepted = '';
 
-       var gameID = '';
+       var gameID = 'default';
 
 
        /*
@@ -42,7 +42,9 @@ angular.module('baoApp',[
 
        }
 
-
+    socket.on('reset', function(msg){
+      reset();
+    })
        socket.on('registrationfailure', function(errMsg) {
          $scope.serverlog ='registrationfailure';
          alert('This user already exists');
@@ -245,11 +247,62 @@ angular.module('baoApp',[
 /*
 game functions
 */
+       $scope.beanBag = {}
+       $scope.beanBag.beans=[];
+       $scope.numberOfBeans = 64;
 
-       $scope.board = {};
-       $scope.board.fields=['1','2'];
-       $scope.board.rows = ['1', '2'];
-       $scope.board.houses = ['1', '2', '3','4','5','6'];
+       for (var i=0; i<$scope.numberOfBeans; i++) {
+         var aBean={
+                    id:i,
+                    color: 'green',
+                    border: '#003300',
+                    x: (10 +15*(i%32)),
+                    y: (10 + 15*(i-i%32)/32)
+                  }
+         $scope.beanBag.beans.push(aBean);
+       }
+
+       var canvas = document.getElementById('beanBag');
+       for (var i=0; i<$scope.beanBag.beans.length; i++){
+         drawBean($scope.beanBag.beans[i], canvas);
+       }
+
+       $scope.numberOfFields =2;
+       $scope.numberOfRows = 2;
+       $scope.numberOfHouses=4;
+
+       $scope.board = {field:[]};
+       for (var k=0; k<$scope.numberOfFields; k++) {
+         var field;
+         field = {fieldID: k, row: []};
+         for (var i=0; i<$scope.numberOfRows; i++) {
+           var row;
+           row={rowID: i, house : []}
+           for (var j=0; j<$scope.numberOfHouses; j++) {
+             var house;
+             house={id: j, canvasId:('house.' + k +'.' + i + '.' + j), beans :[]}
+             /*aBean=$scope.beanBag.pop();
+             house.beans.push(aBean);*/
+             row.house.push(house);
+           }
+           field.row.push(row);
+         }
+         $scope.board.field.push(field);
+       }
+
+       $scope.board.field[0].row[0].house[0].canvasId = ' caracola';
+
+       //$scope.board.fields.push();
+       //$scope.board.fields.push({row: 2});
+
+       /*$scope.board = fields:[
+                        {rows:[{}{}]},
+                        {rows:[{}]}
+                              ]
+                      };*/
+//       $scope.board.fields=['1','2'];
+      // $scope.board.rows = ['1', '2'];
+      // $scope.board.houses = ['1', '2', '3','4','5','6'];
 
        $scope.doClick = function(item, event) {
          if (gameID=='') {
@@ -317,7 +370,7 @@ game functions
 
 
        //alert('after removal '+ $scope.onUsers.length)
-       for (var i=0; i<$scope.onUsers.length; i++) {
+  for (var i=0; i<$scope.onUsers.length; i++) {
          var user=$scope.onUsers[i].split(' ')[0];
          if ($scope.blockedUsers.indexOf(user) > -1 ) {
            $scope.onUsers[i]= user + ' (blocked)';
@@ -325,7 +378,28 @@ game functions
        }
      $scope.$apply();
 
+  }
+
+     function reset(){
+       $scope.log ='';
+       $scope.connected = false;
+       $scope.user = 'guest';
+       $scope.loginUser = '';
+       $scope.loginPassword = '';
+
+       $scope.serverlog ='';
+       $scope.onUsers = [];
+       $scope.blockedUsers = [];
+       $scope.blockedByUsers = [];
+       $scope.invitesReceived = [];
+
+       $scope.selectedHost='';
+       $scope.invitesMade = [];
+       $scope.inviteAccepted = '';
+
+       var gameID = '';
      }
+
    });
 
    function checkConnected(check){
