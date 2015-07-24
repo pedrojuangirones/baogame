@@ -1,4 +1,9 @@
+{"user":"pj","blockedUser":[],"blockedByUser":[],"_id":"Sw88bun2le9JKDTo"}
+{"user":"pj4","blockedUser":[],"blockedByUser":[],"_id":"XyPJZUeG9KX4eSQZ"}
+{"user":"pj3","blockedUser":[],"blockedByUser":[],"_id":"cO9W7mwFcYQLmBup"}
+{"user":"pj2","blockedUser":[],"blockedByUser":[],"_id":"guXonCIY2YMeIPTv"}
 {"$$indexCreated":{"fieldName":"user","unique":true,"sparse":false}}
-{"user":"pj","blockedUser":[],"_id":"OMqn9sjT9OcViUwu"}
-{"user":"pj2","blockedUser":[],"_id":"mo2lhkERKToKSKyu"}
-{"user":"pj3","blockedUser":[],"_id":"rnHo9jhUHQZq4KUA"}
+{"user":"pj","blockedUser":["pj3"],"blockedByUser":[],"_id":"Sw88bun2le9JKDTo"}
+{"user":"pj3","blockedUser":[],"blockedByUser":["pj"],"_id":"cO9W7mwFcYQLmBup"}
+{"user":"pj","blockedUser":[],"blockedByUser":[],"_id":"Sw88bun2le9JKDTo"}
+{"user":"pj3","blockedUser":[],"blockedByUser":[],"_id":"cO9W7mwFcYQLmBup"}

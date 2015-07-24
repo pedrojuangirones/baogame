@@ -15,6 +15,7 @@ angular.module('baoApp',[
        $scope.serverlog ='';
        $scope.onUsers = [];
        $scope.blockedUsers = [];
+       $scope.blockedByUsers = [];
        $scope.invitesReceived = [];
 
        $scope.selectedHost='';
@@ -68,8 +69,8 @@ angular.module('baoApp',[
          alert('Failed to log in: ' + errMsg);
        });
 
-       socket.on('loginOK', function(user) {
-         $scope.serverlog ='loginOK';
+       socket.on('loginsuccess', function(user) {
+         $scope.serverlog ='loginsuccess';
          $scope.user = user
          $scope.connected=true;
          $scope.$apply();
@@ -158,14 +159,21 @@ angular.module('baoApp',[
            return false;
          } else {
            var userToBlock = $scope.onUsers[document.inviteForm.onlineUsers.selectedIndex];
-           socket.emit('blockuser', {fromUser:$scope.user, blockedUser:userToBlock});
+           socket.emit('blockuser', {blockedByUser:$scope.user, blockedUser:userToBlock});
          }
        }
 
-       socket.on('blockedusers', function(blockedusers) {
+       socket.on('blocklist', function(blockList) {
          $scope.blockedUsers=[];
-         for (var j=0; j<blockedusers.length; j++) {
-           $scope.blockedUsers[j]=blockedusers[j];
+         $scope.blockedByUsers=[];
+         //alert('in block list')
+         for (var j=0; j<blockList.blockedUser.length; j++) {
+           //alert(j)
+           $scope.blockedUsers[j]=blockList.blockedUser[j];
+         }
+         for (var j=0; j<blockList.blockedByUser.length; j++) {
+           //alert(j)
+           $scope.blockedByUsers[j]=blockList.blockedByUser[j];
          }
          updateBlocks();
        })
@@ -177,7 +185,7 @@ angular.module('baoApp',[
            return false;
          } else {
            var userToUnBlock = $scope.onUsers[document.inviteForm.onlineUsers.selectedIndex].split(' ')[0];
-           socket.emit('unblockuser', {fromUser:$scope.user, blockedUser:userToUnBlock});
+           socket.emit('unblockuser', {blockedByUser:$scope.user, blockedUser:userToUnBlock});
          }
        }
 
@@ -294,13 +302,26 @@ game functions
        drawCircle(canvas);
      }
 
-     function updateBlocks(){
+    function updateBlocks(){
+      //alert('number online ' + $scope.onUsers.length)
+      for (var i=0; i<$scope.onUsers.length; i++) {
+        $scope.onUsers[i]=$scope.onUsers[i].split(' ')[0];
+      }
+
+      for (var j=0; j<$scope.blockedByUsers.length; j++) {
+         //alert ('j ' + j);
+         var indexOfBlockedByUser = $scope.onUsers.indexOf($scope.blockedByUsers[j])
+         if ( indexOfBlockedByUser > -1 ) {
+           $scope.onUsers.splice(indexOfBlockedByUser,1);
+         }
+      }
+
+
+       //alert('after removal '+ $scope.onUsers.length)
        for (var i=0; i<$scope.onUsers.length; i++) {
          var user=$scope.onUsers[i].split(' ')[0];
          if ($scope.blockedUsers.indexOf(user) > -1 ) {
            $scope.onUsers[i]= user + ' (blocked)';
-         } else {
-           $scope.onUsers[i]= user;
          }
        }
      $scope.$apply();

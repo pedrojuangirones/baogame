@@ -97,17 +97,18 @@ io.on('connection', function(socket) {
         credentials.checkPassword(credential.user, credential.password, function (checkOK) {
           if (checkOK) {
             socket.username = credential.user;
-            socket.emit('loginOK', credential.user);
-            console.log('loginOK ' + credential.user);
+            socket.join(socket.username);
+            socket.emit('loginsuccess', credential.user);
+            console.log('loginsuccess ' + credential.user);
 
             usersOnLine.push(credential.user);
             console.log('user online at login ' + usersOnLine);
             socket.emit('usersOnLine',usersOnLine)
             socket.broadcast.emit('usersOnLine',usersOnLine)
 
-          blockedUsers.sublist(credential.user, function (blockedUsersList) {
+           blockedUsers.blockList(credential.user, function (blockedUsersList) {
             console.log('Send blocked user list on login ' + blockedUsersList)
-            socket.emit('blockedusers', blockedUsersList);
+            socket.emit('blocklist', blockedUsersList);
             })
 
           } else {
@@ -156,21 +157,31 @@ io.on('connection', function(socket) {
 BLOCK user
 */
   socket.on('blockuser', function(blockRequest){
-    console.log('Block request from ' + blockRequest.fromUser
+    console.log('Block request from ' + blockRequest.blockedByUser
     + ' to ' + blockRequest.blockedUser)
-    blockedUsers.add(blockRequest, function (blockedUsersList) {
-      socket.emit('blockedusers', blockedUsersList);
+    blockedUsers.add(blockRequest, function () {
+      blockedUsers.blockList(blockRequest.blockedByUser,function(blockList){
+        socket.emit('blocklist', blockList);
+      })
+      blockedUsers.blockList(blockRequest.blockedUser,function(blockList){
+        socket.to(blockRequest.blockedUser).emit('blocklist', blockList);
       })
     })
+  })
 /*
 UNBLOCK user
 */
-  socket.on('unblockuser', function(unBblockRequest){
-    console.log('Unblock request from ' + unBblockRequest.fromUser
-        + ' to ' + unBblockRequest.blockedUser);
-    blockedUsers.removeBlock(unBblockRequest, function (blockedUsersList) {
-      console.log('in callbak from unBlockedUsers.remove ' + blockedUsersList)
-      socket.emit('blockedusers', blockedUsersList);
+  socket.on('unblockuser', function(unBlockRequest){
+    console.log('Unblock request from ' + unBlockRequest.blockedByUser
+        + ' to ' + unBlockRequest.blockedUser);
+    blockedUsers.removeBlock(unBlockRequest, function (blockList) {
+      blockedUsers.blockList(unBlockRequest.blockedByUser,function(blockList){
+        socket.emit('blocklist', blockList);
+      })
+      blockedUsers.blockList(unBlockRequest.blockedUser,function(blockList){
+        socket.to(unBlockRequest.blockedUser).emit('usersOnLine',usersOnLine)
+        socket.to(unBlockRequest.blockedUser).emit('blocklist', blockList);
+      })
     })
   })
 
