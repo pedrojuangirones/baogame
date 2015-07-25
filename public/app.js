@@ -1,10 +1,15 @@
 
 angular.module('baoApp',[
-  'baoApp.graphics'
+  'baoApp.graphics' ,
+  'baoApp.game'
 ])
 
    .controller('AppController', function ($scope) {
      var socket = io.connect();
+       $scope.mousePos ='';
+       $scope.mouseDown = false ;
+       $scope.startSelCoords = {x:0,y:0};
+       $scope.endSelCoords = {x:0,y:0};
        $scope.pageTitle ='Bao Game';
        $scope.log ='';
        $scope.connected = false;
@@ -247,74 +252,97 @@ angular.module('baoApp',[
 /*
 game functions
 */
+       $scope.numberOfBeans = 64;
        $scope.beanBag = {}
        $scope.beanBag.beans=[];
-       $scope.numberOfBeans = 64;
 
+       $scope.hand = [{}]
+       $scope.hand[0].beans = []
+/*
+       for (var i=0; i<$scope.numberOfBeans; i++) {
+         var aBean={
+                    id:i,
+                    color: 'green',
+                    border: '#003300',
+                    x: (10 + 15*(Math.floor(i/32))),
+                    y: (10 +15*(i%32))
+                  }
+         $scope.hand[0].beans.push(aBean);
+       }
+       var canvas = document.getElementById('hand:0');
+       drawBeans($scope.hand[0].beans,canvas)
+*/
        for (var i=0; i<$scope.numberOfBeans; i++) {
          var aBean={
                     id:i,
                     color: 'green',
                     border: '#003300',
                     x: (10 +15*(i%32)),
-                    y: (10 + 15*(i-i%32)/32)
+                    y: (10 + 15*(Math.floor(i/32)))
                   }
          $scope.beanBag.beans.push(aBean);
        }
 
        var canvas = document.getElementById('beanBag');
-       for (var i=0; i<$scope.beanBag.beans.length; i++){
-         drawBean($scope.beanBag.beans[i], canvas);
-       }
+       drawBeans($scope.beanBag.beans,canvas)
 
        $scope.numberOfFields =2;
        $scope.numberOfRows = 2;
-       $scope.numberOfHouses=4;
+       $scope.numberOfHouses=3;
+/*
+Generate the board
+*/
+    $scope.board =  generateBoard($scope.numberOfFields,
+                                  $scope.numberOfRows,
+                                  $scope.numberOfHouses);
 
-       $scope.board = {field:[]};
-       for (var k=0; k<$scope.numberOfFields; k++) {
-         var field;
-         field = {fieldID: k, row: []};
-         for (var i=0; i<$scope.numberOfRows; i++) {
-           var row;
-           row={rowID: i, house : []}
-           for (var j=0; j<$scope.numberOfHouses; j++) {
-             var house;
-             house={id: j, canvasId:('house.' + k +'.' + i + '.' + j), beans :[]}
-             /*aBean=$scope.beanBag.pop();
-             house.beans.push(aBean);*/
-             row.house.push(house);
-           }
-           field.row.push(row);
-         }
-         $scope.board.field.push(field);
-       }
+    $scope.doMouseDown = function(event){
+      $scope.mouseDown =true;
+      $scope.startSelCoords = mouseCanvasCoords(event);
+    }
 
-       $scope.board.field[0].row[0].house[0].canvasId = ' caracola';
+    $scope.doMouseUp = function(event){
+      $scope.endSelCoords = mouseCanvasCoords(event);
+//      alert('up x: ' +  $scope.endSelCoords.x + ' y: '+ $scope.endSelCoords.y)
+      var beans = pickBeans($scope.startSelCoords,$scope.endSelCoords,$scope.beanBag)
 
-       //$scope.board.fields.push();
-       //$scope.board.fields.push({row: 2});
+      var canvas = document.getElementById('beanBag');
+      clear(canvas)
+      drawBeans($scope.beanBag.beans,canvas)
 
-       /*$scope.board = fields:[
-                        {rows:[{}{}]},
-                        {rows:[{}]}
-                              ]
-                      };*/
-//       $scope.board.fields=['1','2'];
-      // $scope.board.rows = ['1', '2'];
-      // $scope.board.houses = ['1', '2', '3','4','5','6'];
+      alert('give beans over to the hand')
+      var numBeans=beans.length
+      for (var i=0; i<numBeans; i++) {
+        $scope.hand[0].beans.push(beans.pop())
+      }
+      var canvas = document.getElementById('hand:0');
+      drawBeans($scope.hand[0].beans,canvas)
+
+      $scope.mouseDown =false;
+    }
 
        $scope.doClick = function(item, event) {
          if (gameID=='') {
            alert('You are not playing')
            return false;
          }
-
+/*
+         var aBean={id:65,color: 'red',border: '#003300',x: 0,y: 0  }
+         var thisBeans;
+         setBeanXY(aBean, thisBeans, event.target);
+         drawBean(aBean,event.target);
+*/
          $scope.log ='click ' + event.target.id;
 
-         drawClick(event.target);
-         //alert('oneClick:' + event.target.id)
+         //drawClick(event.target);
+         //alert('oneClick: ' + event.target.id + 'width' + event.target.width)
+
          sendMove({type:'oneClick' , targetID: event.target.id}, socket);
+       }
+
+       $scope.doMove = function (ev) {
+         ev           = ev || window.event;
+         $scope.mousePos = mouseCanvasCoords(ev);
        }
 
        $scope.doDblClick = function (item, event) {
@@ -324,7 +352,8 @@ game functions
          }
 
          $scope.log ='Dblclick ' + event.target.id;
-         clearHouse(event.target);
+
+         clear(event.target);
          sendMove({type:'dblClick' , targetID: event.target.id}, socket);
          //alert("dbl clicked: " + event.target.id);
        }
@@ -335,7 +364,7 @@ game functions
          if (move.type === "oneClick") {
            drawClick(canvas);
          } else {
-           clearHouse(canvas);
+           clear(canvas);
 
          }
          $scope.serverlog= 'canvas ' + move.targetID;
@@ -410,4 +439,24 @@ game functions
       return false;
      }
 
-   }
+  }
+
+  function mouseCanvasCoords(ev){
+    var rect = ev.target.getBoundingClientRect();
+    var absoluteCoords = mouseCoords(ev);
+
+    return {
+      x: absoluteCoords.x - rect.left,
+      y: absoluteCoords.y - rect.top
+    }
+	}
+
+	function mouseCoords(ev){
+    if(ev.pageX || ev.pageY){
+       return {x:ev.pageX, y:ev.pageY};
+    }
+    return {
+     x:ev.clientX + document.body.scrollLeft - document.body.clientLeft,
+     y:ev.clientY + document.body.scrollTop  - document.body.clientTop
+    };
+	}

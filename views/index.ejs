@@ -42,12 +42,14 @@
                                      ng-dblclick="doDblClick(h, $event)"
                                      border="black">
       <tr><td colspan = "3">
-        <canvas id="beanBag" width="600" height="35">
+        <canvas id="beanBag" width="600" height="35" ng-mousemove="doMove($event)"
+                                                    ng-mousedown="doMouseDown($event)"
+                                                    ng-mouseup="doMouseUp($event)">
           <p>Sorry: Browser does not support Graphics Canvas</p></canvas>
       </td></tr>
       <tr>
         <td>
-          <canvas id="handCanvas1" width="50" height="400"></canvas>
+          <canvas id="hand:1" width="50" height="400"></canvas>
         </td>
         <td><div align="center">
           <table border="black" ng-repeat="f in board.field">
@@ -59,7 +61,7 @@
           </table>
         </td>
         <td>
-          <canvas id="handCanvas2" width="50" height="400"></canvas>
+          <canvas id="hand:0" width="50" height="400"></canvas>
         </td>
       </tr>
 
@@ -98,7 +100,7 @@
 </TABLE>
 
 <div align="center">
-  <p>Log: {{log}}    // Server Log: {{serverlog}}<br>
+  <p>Log: {{log}}    // Server Log: {{serverlog}}  // X: {{mousePos.x}} // Y: {{mousePos.y}}<br>
   <form name="outputForm">
         <input type='text'  size='40' name="outputText" >
 
