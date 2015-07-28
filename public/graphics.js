@@ -90,6 +90,17 @@ function drawCircle(canvas) {
     return true;
 }
 
+function paintComponent(component) {
+  if (!component.canvasId) {
+    alert('canvasId not defined')
+    return
+  }
+
+  var canvas = document.getElementById(component.canvasId);
+  clear(canvas)
+  drawBeans(component.beans,canvas);
+}
+
 function clear(canvas) {
   var context = canvas.getContext('2d');
   context.clearRect(0, 0, canvas.width, canvas.height);

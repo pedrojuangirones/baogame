@@ -257,16 +257,17 @@ game functions
        $scope.beanBag.beans=[];
 
        $scope.hand = [{}];
-/*
+
        for (var i=0; i<2; i++) {
+         $scope.hand[i] = {}
          $scope.hand[i].canvasId = ('hand:' + i);
          $scope.hand[i].beans = []
        }
-*/
+/*
        var i = 0
        $scope.hand[0].canvasId = 'hand:' + i
        $scope.hand[0].beans = []
-
+*/
        var canvas = document.getElementById('beanBag');
        for (var i=0; i<$scope.numberOfBeans; i++) {
          var aBean={
@@ -330,7 +331,7 @@ Generate the board
 
       //  alert('f: ' + fieldNum + ' r: ' + rowNum + ' h: ' +houseNum)
         var aBean = $scope.hand[0].beans.pop();
-        //paintElement($scope.hand[0])
+        paintComponent($scope.hand[0])
 
         alert ('x' + aBean.x)
 
