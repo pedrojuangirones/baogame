@@ -265,11 +265,6 @@ game functions
          $scope.hand[i].canvasId = ('hand:' + i);
          $scope.hand[i].beans = []
        }
-/*
-       var i = 0
-       $scope.hand[0].canvasId = 'hand:' + i
-       $scope.hand[0].beans = []
-*/
        var canvas = document.getElementById('beanBag');
        for (var i=0; i<$scope.numberOfBeans; i++) {
          var aBean={
@@ -325,7 +320,7 @@ Generate the board
       clear(canvas)
       //drawBeans($scope.hand[0].beans,canvas)
 
-      paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store)
+      updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
 
       $scope.mouseDown =false;
     }
@@ -347,7 +342,7 @@ Generate the board
       }
 
       $scope.$apply();
-      paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store)
+      updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
     }
 
       $scope.doHouseClick = function(event){
@@ -368,7 +363,7 @@ Generate the board
 
         $scope.$apply();
 
-        paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store)
+        updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
 
       }
 
@@ -416,6 +411,18 @@ Generate the board
          $scope.serverlog= 'canvas ' + move.targetID;
        });
 
+       socket.on('gamestate', function(gameState) {
+         $scope.board = gameState.board;
+         $scope.hand = gameState.hand;
+         $scope.beanBag = gameState.beanBag;
+         $scope.store = gameState.store;
+
+         $scope.$apply();
+
+         paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store)
+
+       })
+
      function sendMove(move, socket) {
        if (gameID=='') {
          alert('You are not playing')
@@ -424,6 +431,7 @@ Generate the board
        //alert('move is game:' + gameID + ' move: ' +move );
        socket.emit('newmove', {game: gameID, move:move});
      }
+
 
      function drawClick(canvas) {
        drawCircle(canvas);

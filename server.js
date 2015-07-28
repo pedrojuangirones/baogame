@@ -52,7 +52,7 @@ var usersOnLine = [];
 io.on('connection', function(socket) {
   console.log('a user connected');
   socket.emit('reset', '');
-  
+
 
   socket.on('signup', function(credential){
 
@@ -149,6 +149,10 @@ io.on('connection', function(socket) {
   socket.on('startgame', function(gameID){
     console.log('User ' +socket.username + ' has joined game' + gameID)
     socket.join(gameID);
+  })
+
+  socket.on('gamestate', function(gameState) {
+    socket.to(gameState.gameID).emit('gamestate', gameState);
   })
 
 /*

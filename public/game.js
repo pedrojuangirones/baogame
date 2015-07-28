@@ -54,6 +54,13 @@ function pickBeans(startCoords,endCoords, beanBag) {
 
 }
 
+function updateGame(gameID, board, hand, beanBag, store, socket) {
+  paintGame(board, hand, beanBag, store)
+
+  gameState = {gameID: gameID, board: board, hand: hand, beanBag: beanBag, store: store}
+  socket.emit('gamestate', gameState)
+}
+
 
 function setBeanXY(bean,beans,canvas) {
   var componentType = canvas.id.split(':')[0]
