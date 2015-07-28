@@ -6,13 +6,17 @@ function generateBoard(numberOfFields,numberOfRows,numberOfHouses) {
     board = {field:[]};
     for (var k=0; k<numberOfFields; k++) {
       var field;
-      field = {fieldID: k, row: []};
+      field = {id: k, row: []};
       for (var i=0; i<numberOfRows; i++) {
         var row;
-        row={rowID: i, house : []}
+        row={id: i, house : []}
         for (var j=0; j<numberOfHouses; j++) {
           var house;
-          house={id: j, canvasId:('house:' + k +'.' + i + '.' + j), beans :[]}
+          house={
+                 id: j,
+                 canvasId:('house:' + k +'.' + i + '.' + j),
+                 beans :[]
+               }
           /*aBean=$scope.beanBag.pop();
           house.beans.push(aBean);*/
           row.house.push(house);
@@ -23,6 +27,7 @@ function generateBoard(numberOfFields,numberOfRows,numberOfHouses) {
     }
     return board;
 }
+
 
 function pickBeans(startCoords,endCoords, beanBag) {
   var pickedBeans = [];

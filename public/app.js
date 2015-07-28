@@ -255,8 +255,10 @@ game functions
        $scope.numberOfBeans = 64;
        $scope.beanBag = {}
        $scope.beanBag.beans=[];
+       $scope.beanBag.canvasId = 'beanBag'
 
        $scope.hand = [{}];
+       $scope.store = [{}]
 
        for (var i=0; i<2; i++) {
          $scope.hand[i] = {}
@@ -281,7 +283,7 @@ game functions
          $scope.beanBag.beans.push(aBean);
        }
 
-       drawBeans($scope.beanBag.beans,canvas)
+      drawBeans($scope.beanBag.beans,canvas)
 
        $scope.numberOfFields =2;
        $scope.numberOfRows = 2;
@@ -292,6 +294,9 @@ Generate the board
     $scope.board =  generateBoard($scope.numberOfFields,
                                   $scope.numberOfRows,
                                   $scope.numberOfHouses);
+
+    $scope.$apply();
+
 
     $scope.doMouseDown = function(event){
       $scope.mouseDown =true;
@@ -305,7 +310,7 @@ Generate the board
 
       var canvas = document.getElementById('beanBag');
       clear(canvas)
-      drawBeans($scope.beanBag.beans,canvas)
+    //  drawBeans($scope.beanBag.beans,canvas)
 
       var numBeans=beans.length
       var canvas = document.getElementById('hand:0');
@@ -315,10 +320,34 @@ Generate the board
         aBean = placeBean(aBean, $scope.hand[0].beans, canvas)
         $scope.hand[0].beans.push(aBean)
       }
+
+      $scope.$apply()
       clear(canvas)
-      drawBeans($scope.hand[0].beans,canvas)
+      //drawBeans($scope.hand[0].beans,canvas)
+
+      paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store)
 
       $scope.mouseDown =false;
+    }
+
+    $scope.doHouseDblClick = function(event) {
+      var canvas = document.getElementById('hand:0');
+      var args = event.target.id.split(':')[1].split('.');
+      var fieldNum = args[0]
+      var rowNum = args[1];
+      var houseNum = args[2];
+
+      var numBeans=$scope.board.field[fieldNum].row[rowNum].house[houseNum].beans.length;
+
+      for (var i=0; i<numBeans; i++) {
+        var aBean;
+        aBean = $scope.board.field[fieldNum].row[rowNum].house[houseNum].beans.pop();
+        aBean = placeBean(aBean, $scope.hand[0].beans, canvas);
+        $scope.hand[0].beans.push(aBean)
+      }
+
+      $scope.$apply();
+      paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store)
     }
 
       $scope.doHouseClick = function(event){
@@ -327,16 +356,20 @@ Generate the board
         var fieldNum = args[0]
         var rowNum = args[1];
         var houseNum = args[2];
-        var house =   $scope.board.field[fieldNum].row[rowNum].house[houseNum]
 
-      //  alert('f: ' + fieldNum + ' r: ' + rowNum + ' h: ' +houseNum)
-        var aBean = $scope.hand[0].beans.pop();
-        paintComponent($scope.hand[0])
 
-        alert ('x' + aBean.x)
+        if ($scope.hand[0].beans.length > 0 ) {
+          var aBean = $scope.hand[0].beans.pop();
+          aBean = placeBean(aBean,
+                           $scope.board.field[fieldNum].row[rowNum].house[houseNum].beans,
+                           canvas)
+          $scope.board.field[fieldNum].row[rowNum].house[houseNum].beans.push(aBean);
+        }
 
-        house.beans.push(aBean);
-        drawBeans(house.beans,canvas)
+        $scope.$apply();
+
+        paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store)
+
       }
 
        $scope.doClick = function(item, event) {
@@ -344,12 +377,7 @@ Generate the board
            alert('You are not playing')
            return false;
          }
-/*
-         var aBean={id:65,color: 'red',border: '#003300',x: 0,y: 0  }
-         var thisBeans;
-         setBeanXY(aBean, thisBeans, event.target);
-         drawBean(aBean,event.target);
-*/
+
          $scope.log ='click ' + event.target.id;
 
          //drawClick(event.target);
@@ -417,12 +445,12 @@ Generate the board
 
 
        //alert('after removal '+ $scope.onUsers.length)
-  for (var i=0; i<$scope.onUsers.length; i++) {
-         var user=$scope.onUsers[i].split(' ')[0];
-         if ($scope.blockedUsers.indexOf(user) > -1 ) {
-           $scope.onUsers[i]= user + ' (blocked)';
-         }
-       }
+       for (var i=0; i<$scope.onUsers.length; i++) {
+              var user=$scope.onUsers[i].split(' ')[0];
+              if ($scope.blockedUsers.indexOf(user) > -1 ) {
+                $scope.onUsers[i]= user + ' (blocked)';
+              }
+            }
      $scope.$apply();
 
   }

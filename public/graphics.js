@@ -5,6 +5,15 @@ function placeBean(bean, beans, canvas) {
   var componentType = getComponenType(canvas)
   switch (componentType) {
     case 'house':
+    for (var i=0; i<(beans.length+1); i++) {
+      bean.x = (10 +15*(Math.floor(i/4)));
+      bean.y = (10 + 15*(i%4));
+      if (i<beans.length) {
+        if ( (bean.x !== beans[i].x) || (bean.y !== beans[i].y) ) {
+          continue
+        }
+      }
+    }
         break;
     case 'beanBag':
     for (var i=0; i<(beans.length+1); i++) {
@@ -16,23 +25,21 @@ function placeBean(bean, beans, canvas) {
         }
       }
     }
-    break;
+        break;
     case 'hand':
     for (var i=0; i<(beans.length+1); i++) {
-      bean.x = (10 + 15*(i%2));
-      bean.y = (10 +15*(Math.floor(i/2)));
-
+      bean.x = (10 + 15*(i%3));
+      bean.y = (10 +15*(Math.floor(i/3)));
       if (i<beans.length) {
         if ( (bean.x !== beans[i].x) || (bean.y !== beans[i].y) ) {
           continue
         }
       }
     }
-    break;
+        break;
     default:
      alert('Wrong canvas ID')
   }
-  //alert('x=' + bean.x +' y: ' + bean.y)
   return bean
 }
 
@@ -41,6 +48,8 @@ function drawBeans(beans, canvas){
     for (var i=0; i<beans.length; i++){
       drawBean(beans[i],canvas)
     }
+  } else {
+    alert('here')
   }
 }
 
@@ -53,8 +62,8 @@ function drawBean(bean,canvas){
   var componentType = getComponenType(canvas)
   switch (componentType) {
     case 'house':
-        finalX=bean.x + canvas.width/2;
-        finalY=bean.y + canvas.height/2;
+        finalX=bean.x ; //+ canvas.width/2;
+        finalY=bean.y ; //+ canvas.height/2;
         break;
     case 'beanBag':
     case 'hand':
@@ -90,15 +99,46 @@ function drawCircle(canvas) {
     return true;
 }
 
+function paintGame(board, hand, beanBag, store){
+
+  paintComponent(beanBag)
+  if (store) {
+    //alert('store')
+  }
+  for (var k=0; k<board.field.length; k++) {
+    //alert('field ' + k + ' ' + board.field[k].id)
+   for (var i=0; i<board.field[k].row.length; i++) {
+      //alert('row ' + board.field[k].row[i].id)
+      for (var j=0; j<board.field[k].row[i].house.length; j++) {
+        //alert('house' + board.field[k].row[i].house[j].id)
+        paintComponent(board.field[k].row[i].house[j])
+      }
+
+    }
+  }
+
+  for (var i=0; i<hand.length; i++) {
+    paintComponent(hand[i])
+  }
+
+}
+
 function paintComponent(component) {
   if (!component.canvasId) {
     alert('canvasId not defined')
     return
   }
 
+  //alert('canvas ' + component.canvasId)
+
   var canvas = document.getElementById(component.canvasId);
   clear(canvas)
-  drawBeans(component.beans,canvas);
+  //alert('canvas 2' + component.canvasId)
+  if (component.beans.length) {
+    //alert('beans found')
+    drawBeans(component.beans,canvas)
+
+  }
 }
 
 function clear(canvas) {
