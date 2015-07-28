@@ -8,11 +8,15 @@ function placeBean(bean, beans, canvas) {
         break;
     case 'beanBag':
     for (var i=0; i<(beans.length+1); i++) {
-      bean.x = (10 +15*(i%32));
-      bean.y = (10 + 15*(Math.floor(i/32)));
-      if ( bean.x !== beans[i].x || bean.y !== beans[i].y ) continue
-      break;
+      bean.x = (10 +15*(Math.floor(i/2)));
+      bean.y = (10 + 15*(i%2));
+      if (i<beans.length) {
+        if ( (bean.x !== beans[i].x) || (bean.y !== beans[i].y) ) {
+          continue
+        }
+      }
     }
+    break;
     case 'hand':
     for (var i=0; i<(beans.length+1); i++) {
       bean.x = (10 + 15*(i%2));

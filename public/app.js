@@ -258,32 +258,20 @@ game functions
 
        $scope.hand = [{}]
        $scope.hand[0].beans = []
-/*
+
+       var canvas = document.getElementById('beanBag');
        for (var i=0; i<$scope.numberOfBeans; i++) {
          var aBean={
                     id:i,
                     color: 'green',
                     border: '#003300',
-                    x: (10 + 15*(Math.floor(i/32))),
-                    y: (10 +15*(i%32))
+                    x: 0,
+                    y: 0
                   }
-         $scope.hand[0].beans.push(aBean);
-       }
-       var canvas = document.getElementById('hand:0');
-       drawBeans($scope.hand[0].beans,canvas)
-*/
-       for (var i=0; i<$scope.numberOfBeans; i++) {
-         var aBean={
-                    id:i,
-                    color: 'green',
-                    border: '#003300',
-                    x: (10 +15*(i%32)),
-                    y: (10 + 15*(Math.floor(i/32)))
-                  }
+         aBean = placeBean(aBean, $scope.beanBag.beans, canvas)
          $scope.beanBag.beans.push(aBean);
        }
 
-       var canvas = document.getElementById('beanBag');
        drawBeans($scope.beanBag.beans,canvas)
 
        $scope.numberOfFields =2;
