@@ -256,7 +256,15 @@ game functions
        $scope.beanBag = {}
        $scope.beanBag.beans=[];
 
-       $scope.hand = [{}]
+       $scope.hand = [{}];
+/*
+       for (var i=0; i<2; i++) {
+         $scope.hand[i].canvasId = ('hand:' + i);
+         $scope.hand[i].beans = []
+       }
+*/
+       var i = 0
+       $scope.hand[0].canvasId = 'hand:' + i
        $scope.hand[0].beans = []
 
        var canvas = document.getElementById('beanBag');
@@ -311,6 +319,24 @@ Generate the board
 
       $scope.mouseDown =false;
     }
+
+      $scope.doHouseClick = function(event){
+        var canvas = event.target;
+        var args = event.target.id.split(':')[1].split('.');
+        var fieldNum = args[0]
+        var rowNum = args[1];
+        var houseNum = args[2];
+        var house =   $scope.board.field[fieldNum].row[rowNum].house[houseNum]
+
+      //  alert('f: ' + fieldNum + ' r: ' + rowNum + ' h: ' +houseNum)
+        var aBean = $scope.hand[0].beans.pop();
+        //paintElement($scope.hand[0])
+
+        alert ('x' + aBean.x)
+
+        house.beans.push(aBean);
+        drawBeans(house.beans,canvas)
+      }
 
        $scope.doClick = function(item, event) {
          if (gameID=='') {

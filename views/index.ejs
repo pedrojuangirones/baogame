@@ -55,7 +55,8 @@
           <table border="black" ng-repeat="f in board.field">
             <tr ng-repeat="r in f.row">
               <td ng-repeat="h in r.house">
-                <canvas  id="{{h.canvasId}}" width="100" height="100"></canvas>
+                <canvas  id="{{h.canvasId}}" width="100" height="100"
+                         ng-click="doHouseClick($event)"></canvas>
               </td></div>
             </tr>
           </table>
