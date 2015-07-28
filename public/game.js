@@ -31,9 +31,9 @@ function pickBeans(startCoords,endCoords, beanBag) {
   var maxY = Math.max(startCoords.y,endCoords.y)
   var minY = Math.min(startCoords.y,endCoords.y)
 
-  /*alert('x: ' + maxX + ' y: ' + maxY +
-         '\nx: ' + minX + ' y: ' + minY) */
-  for (var i=(beanBag.beans.length - 1); i>0; i--) {
+/*  alert('x: ' + maxX + ' y: ' + maxY +
+         '\nx: ' + minX + ' y: ' + minY) ;*/
+  for (var i=(beanBag.beans.length - 1); i>-1; i--) {
     beanX = beanBag.beans[i].x;
     beanY = beanBag.beans[i].y;
 
@@ -45,7 +45,6 @@ function pickBeans(startCoords,endCoords, beanBag) {
 
     }
   }
-  alert(beanBag.beans.length)
   return pickedBeans;
 
 }

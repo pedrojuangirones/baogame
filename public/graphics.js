@@ -1,5 +1,37 @@
 angular.module('baoApp.graphics',[])
 
+function placeBean(bean, beans, canvas) {
+  var beanRadius = 5;
+  var componentType = getComponenType(canvas)
+  switch (componentType) {
+    case 'house':
+        break;
+    case 'beanBag':
+    for (var i=0; i<(beans.length+1); i++) {
+      bean.x = (10 +15*(i%32));
+      bean.y = (10 + 15*(Math.floor(i/32)));
+      if ( bean.x !== beans[i].x || bean.y !== beans[i].y ) continue
+      break;
+    }
+    case 'hand':
+    for (var i=0; i<(beans.length+1); i++) {
+      bean.x = (10 + 15*(i%2));
+      bean.y = (10 +15*(Math.floor(i/2)));
+
+      if (i<beans.length) {
+        if ( (bean.x !== beans[i].x) || (bean.y !== beans[i].y) ) {
+          continue
+        }
+      }
+    }
+    break;
+    default:
+     alert('Wrong canvas ID')
+  }
+  //alert('x=' + bean.x +' y: ' + bean.y)
+  return bean
+}
+
 function drawBeans(beans, canvas){
   if (beans) {
     for (var i=0; i<beans.length; i++){
@@ -13,8 +45,8 @@ function drawBean(bean,canvas){
 
   var finalX;
   var finalY;
-  var componentType = getComponenType(canvas)
 
+  var componentType = getComponenType(canvas)
   switch (componentType) {
     case 'house':
         finalX=bean.x + canvas.width/2;

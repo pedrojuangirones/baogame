@@ -303,19 +303,22 @@ Generate the board
 
     $scope.doMouseUp = function(event){
       $scope.endSelCoords = mouseCanvasCoords(event);
-//      alert('up x: ' +  $scope.endSelCoords.x + ' y: '+ $scope.endSelCoords.y)
+    //  alert('up x: ' +  $scope.endSelCoords.x + ' y: '+ $scope.endSelCoords.y)
       var beans = pickBeans($scope.startSelCoords,$scope.endSelCoords,$scope.beanBag)
 
       var canvas = document.getElementById('beanBag');
       clear(canvas)
       drawBeans($scope.beanBag.beans,canvas)
 
-      alert('give beans over to the hand')
       var numBeans=beans.length
-      for (var i=0; i<numBeans; i++) {
-        $scope.hand[0].beans.push(beans.pop())
-      }
       var canvas = document.getElementById('hand:0');
+      for (var i=0; i<numBeans; i++) {
+        var aBean;
+        aBean = beans.pop()
+        aBean = placeBean(aBean, $scope.hand[0].beans, canvas)
+        $scope.hand[0].beans.push(aBean)
+      }
+      clear(canvas)
       drawBeans($scope.hand[0].beans,canvas)
 
       $scope.mouseDown =false;
