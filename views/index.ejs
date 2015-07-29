@@ -38,28 +38,33 @@
 
                       </ul>		</TD>
   <TD WIDTH=60%>
-    <table class="doNoSelect" align="center" id="board" ng-click="doClick(h, $event)"
-                                     ng-dblclick="doDblClick(h, $event)">
+    <table class="doNoSelect" align="center" id="board"  border="black">
+      <tr><td colspan = "3">
+        <canvas id="beanBag" width="600" height="35" ng-mousemove="doMove($event)"
+                                                    ng-mousedown="doMouseDown($event)"
+                                                    ng-mouseup="doMouseUp($event)">
+          <p>Sorry: Browser does not support Graphics Canvas</p></canvas>
+      </td></tr>
       <tr>
         <td>
-          <canvas id="handCanvas1" width="50" height="400">
-          <p>Sorry: Browser does not support Graphics Canvas</p></canvas>
+          <canvas id="hand:1" width="50" height="400"></canvas>
         </td>
-        <td>
-          <table border="black" ng-repeat="f in board.fields">
-            <tr ng-repeat="r in board.rows">
-              <td ng-repeat="h in board.houses">
-                <canvas  id="canvasID.{{f}}.{{r}}.{{h}}" width="100" height="100">
-                <p>Sorry: Browser does not support Graphics Canvas</p></canvas>
-              </td>
+        <td><div align="center">
+          <table border="black" ng-repeat="f in board.field">
+            <tr ng-repeat="r in f.row">
+              <td ng-repeat="h in r.house">
+                <canvas  id="{{h.canvasId}}" width="100" height="100"
+                         ng-click="doHouseClick($event)"
+                         ng-dblclick="doHouseDblClick($event)"></canvas>
+              </td></div>
             </tr>
           </table>
         </td>
-      <td>
-        <canvas id="handCanvas2" width="50" height="400">
-        <p>Sorry: Browser does not support Graphics Canvas</p></canvas>
+        <td>
+          <canvas id="hand:0" width="50" height="400"></canvas>
         </td>
       </tr>
+
     </table>
   </TD>
               <TD WIDTH=20%>
@@ -95,7 +100,7 @@
 </TABLE>
 
 <div align="center">
-  <p>Log: {{log}}    // Server Log: {{serverlog}}<br>
+  <p>Log: {{log}}    // Server Log: {{serverlog}}  // X: {{mousePos.x}} // Y: {{mousePos.y}}<br>
   <form name="outputForm">
         <input type='text'  size='40' name="outputText" >
 

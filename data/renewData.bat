@@ -1,4 +1,4 @@
 cd data
-cp credentials.db.fresh credentials.db
-cp blockedUsers.db.fresh blockedUsers.db
+cp credentials.db credentials.db.fresh
+cp blockedUsers.db blockedUsers.db.fresh 
 cd ..

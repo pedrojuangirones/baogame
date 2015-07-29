@@ -51,10 +51,8 @@ var usersOnLine = [];
 
 io.on('connection', function(socket) {
   console.log('a user connected');
-  credentials.list(function (err, documents) {
+  socket.emit('reset', '');
 
-  //socket.emit('list', documents);
-  });
 
   socket.on('signup', function(credential){
 
@@ -67,7 +65,7 @@ io.on('connection', function(socket) {
       } else {
         console.log(credential.user +' registered ' )
         blockedUsers.create(credential.user, function(insertError) {})
-        socket.emit('registrationsuccess', credential) //{user: credential.user, password: credential.password}
+        socket.emit('registrationsuccess', credential)
       }
 
       credentials.list(function (err, data) {
@@ -75,7 +73,7 @@ io.on('connection', function(socket) {
         for (var i=0; i<data.length; i++) {
           users[i]=data[i].user;
         }
-        console.log(users);
+        console.log('All registered users when ' + credential.user + ' registers ' + users);
 
       });
     });
@@ -97,17 +95,27 @@ io.on('connection', function(socket) {
         credentials.checkPassword(credential.user, credential.password, function (checkOK) {
           if (checkOK) {
             socket.username = credential.user;
-            socket.emit('loginOK', credential.user);
-            console.log('loginOK ' + credential.user);
+            socket.join(socket.username);
+            socket.emit('loginsuccess', credential.user);
+            console.log('loginsuccess ' + credential.user);
+
             usersOnLine.push(credential.user);
-            console.log(usersOnLine);
+            console.log('user online at login ' + usersOnLine);
             socket.emit('usersOnLine',usersOnLine)
             socket.broadcast.emit('usersOnLine',usersOnLine)
 
+/*<<<<<<< HEAD
             blockedUsers.sublist(credential.user, function (blockedUsersList) {
               console.log('blocked users for ' + credential.user + ':' + blockedUsersList);
               socket.emit('blockedusers', blockedUsersList);
             })
+=======*/
+           blockedUsers.blockList(credential.user, function (blockedUsersList) {
+            console.log('Send blocked user list on login ' + blockedUsersList)
+            socket.emit('blocklist', blockedUsersList);
+            })
+
+//>>>>>>> dev
           } else {
             socket.emit('loginfailure', 'Wrong user or password');
             console.log('loginfailure ' + credential.user);
@@ -123,25 +131,18 @@ io.on('connection', function(socket) {
 
   socket.on('invitation', function(invitationCard){
     console.log('Invitation: from ' + invitationCard.fromUser + ' to ' + invitationCard.toUser);
-    blockedUsers.sublist(invitationCard.toUser, function (blockedUsersList) {
-      if (blockedUsersList.indexOf(invitationCard.fromUser) == -1) {
-        console.log('Not Blocked: from ' + invitationCard.fromUser + ' to ' + invitationCard.toUser);
-        socket.broadcast.emit('invitation', invitationCard);
-      } else {
-        console.log('Blocked: from ' + invitationCard.fromUser + ' to ' + invitationCard.toUser);
-        socket.emit('declineinvitation', invitationCard);
-      }
-    })
+
+    socket.to(invitationCard.toUser).emit('invitation', invitationCard);
   })
 
   socket.on('cancelInvitation', function(invitationCard){
     console.log('Cancel invitation: from ' + invitationCard.fromUser + ' to ' + invitationCard.toUser);
-    socket.broadcast.emit('cancelInvitation', invitationCard);
+    socket.to(invitationCard.toUser).emit('cancelInvitation', invitationCard);
   })
 
   socket.on('declineinvitation', function(invitationCard){
     console.log('Invitation declined: from ' + invitationCard.fromUser + ' by ' + invitationCard.toUser);
-    socket.broadcast.emit('declineinvitation', invitationCard);
+    socket.to(invitationCard.fromUser).emit('declineinvitation', invitationCard);
   })
 
   socket.on('acceptinvitation', function(invitationCard){
@@ -150,7 +151,7 @@ io.on('connection', function(socket) {
     socket.join(gameID);
     console.log('User ' +socket.username + ' has joined game' + gameID)
 
-    socket.broadcast.emit('invitationaccepted', invitationCard);
+    socket.to(invitationCard.fromUser).emit('invitationaccepted', invitationCard);
   })
 
   socket.on('startgame', function(gameID){
@@ -158,25 +159,39 @@ io.on('connection', function(socket) {
     socket.join(gameID);
   })
 
+  socket.on('gamestate', function(gameState) {
+    socket.to(gameState.gameID).emit('gamestate', gameState);
+  })
+
 /*
 BLOCK user
 */
   socket.on('blockuser', function(blockRequest){
-    console.log('Block request from ' + blockRequest.fromUser
+    console.log('Block request from ' + blockRequest.blockedByUser
     + ' to ' + blockRequest.blockedUser)
-    blockedUsers.add(blockRequest, function (blockedUsersList) {
-      socket.emit('blockedusers', blockedUsersList);
+    blockedUsers.add(blockRequest, function () {
+      blockedUsers.blockList(blockRequest.blockedByUser,function(blockList){
+        socket.emit('blocklist', blockList);
+      })
+      blockedUsers.blockList(blockRequest.blockedUser,function(blockList){
+        socket.to(blockRequest.blockedUser).emit('blocklist', blockList);
       })
     })
+  })
 /*
 UNBLOCK user
 */
-  socket.on('unblockuser', function(unBblockRequest){
-    console.log('Unblock request from ' + unBblockRequest.fromUser
-        + ' to ' + unBblockRequest.blockedUser);
-    blockedUsers.removeBlock(unBblockRequest, function (blockedUsersList) {
-      console.log('in callbak from unBlockedUsers.remove ' + blockedUsersList)
-      socket.emit('blockedusers', blockedUsersList);
+  socket.on('unblockuser', function(unBlockRequest){
+    console.log('Unblock request from ' + unBlockRequest.blockedByUser
+        + ' to ' + unBlockRequest.blockedUser);
+    blockedUsers.removeBlock(unBlockRequest, function (blockList) {
+      blockedUsers.blockList(unBlockRequest.blockedByUser,function(blockList){
+        socket.emit('blocklist', blockList);
+      })
+      blockedUsers.blockList(unBlockRequest.blockedUser,function(blockList){
+        socket.to(unBlockRequest.blockedUser).emit('usersOnLine',usersOnLine)
+        socket.to(unBlockRequest.blockedUser).emit('blocklist', blockList);
+      })
     })
   })
 
