@@ -282,7 +282,7 @@ game functions
 
        $scope.numberOfFields =2;
        $scope.numberOfRows = 2;
-       $scope.numberOfHouses=3;
+       $scope.numberOfHouses=7;
 /*
 Generate the board
 */
@@ -412,9 +412,13 @@ Generate the board
        });
 
        socket.on('gamestate', function(gameState) {
-         $scope.board = gameState.board;
-         $scope.hand = gameState.hand;
          $scope.beanBag = gameState.beanBag;
+
+         $scope.board = mirrorBoard(gameState.board);
+         for (var i=0; i<2; i++) {
+           $scope.hand[i].beans = gameState.hand[(i+1)%2].beans;
+         }
+
          $scope.store = gameState.store;
 
          $scope.$apply();

@@ -3,7 +3,12 @@ angular.module('baoApp.game',[
 ])
 
 function generateBoard(numberOfFields,numberOfRows,numberOfHouses) {
-    board = {field:[]};
+    board = {
+              numberOfFields: numberOfFields,
+              numberOfRows: numberOfRows,
+              numberOfHouses: numberOfHouses,
+              field:[]
+            };
     for (var k=0; k<numberOfFields; k++) {
       var field;
       field = {id: k, row: []};
@@ -28,6 +33,39 @@ function generateBoard(numberOfFields,numberOfRows,numberOfHouses) {
     return board;
 }
 
+function mirrorBoard(oldBoard) {
+  var numF = oldBoard.numberOfFields;
+  var numR = oldBoard.numberOfRows;
+  var numH = oldBoard.numberOfHouses;
+  board = {
+            numberOfFields: numF ,
+            numberOfRows: numR,
+            numberOfHouses: numH,
+            field:[]
+          };
+    for (var k=0; k<numF; k++) {
+      var field;
+      field = {id: k, row: []};
+      for (var i=0; i<numR; i++) {
+        var row;
+        row={id: i, house : []}
+        for (var j=0; j<numH; j++) {
+          var house;
+          house={
+                 id: j,
+                 canvasId:('house:' + k +'.' + i + '.' + j),
+                 beans : oldBoard.field[(numF-1)-k].row[(numR-1)-i].house[(numH-1)-j].beans
+               }
+          /*aBean=$scope.beanBag.pop();
+          house.beans.push(aBean);*/
+          row.house.push(house);
+        }
+        field.row.push(row);
+      }
+      board.field.push(field);
+    }
+    return board;
+}
 
 function pickBeans(startCoords,endCoords, beanBag) {
   var pickedBeans = [];
