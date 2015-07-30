@@ -8,6 +8,12 @@ angular.module('baoApp',[
      var socket = io.connect();
      $scope.houseWidth=75;
      $scope.houseHeight=75;
+     $scope.handWidth= 50;
+     $scope.handHeight = 400;
+     $scope.storeWidth = 0;
+     $scope.storeHeight = 0;
+     $scope.beanBagWidth = 500; //value overwritten in html until timeout
+     $scope.beanBagHeight = 35;
        $scope.mousePos ='';
        $scope.mouseDown = false ;
        $scope.startSelCoords = {x:0,y:0};
@@ -30,7 +36,7 @@ angular.module('baoApp',[
        $scope.inviteAccepted = '';
 
        var gameID = 'default';
-       var activePlayer = false;
+       var activePlayer = true;
 
        /*
        game functions
@@ -77,9 +83,9 @@ angular.module('baoApp',[
                                          $scope.numberOfFields,
                                          $scope.numberOfRows,
                                          $scope.numberOfHouses);
-           drawBeans($scope.beanBag.beans,canvas)
 
            $scope.$apply();
+           drawBeans($scope.beanBag.beans,canvas)
 
 
        /*

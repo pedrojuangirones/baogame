@@ -39,17 +39,22 @@
                       </ul>		</TD>
   <TD WIDTH=60%>
     <table class="doNoSelect" align="center" id="board"  border="black">
-      <tr><td colspan = "3" align="center">
-        <canvas id="beanBag" width="600" height="35" ng-mousemove="doMove($event)"
-                                                    ng-mousedown="doMouseDown($event)"
-                                                    ng-mouseup="doMouseUp($event)"
-                                                    >
+      <tr><td colspan = "5" align="center">
+        <!-- width="{{beanBagWidth}}" height="{{beanBagHeight}}" -->
+        <canvas id="beanBag" width=500 height=35
+                             ng-mousemove="doMove($event)"
+                             ng-mousedown="doMouseDown($event)"
+                             ng-mouseup="doMouseUp($event)" >
           <p>Sorry: Browser does not support Graphics Canvas</p></canvas>
       </td></tr>
       <tr>
         <td>
-          <canvas id="hand:1" width="50" height="400"
+          <canvas id="hand:1" width="{{handWidth}}" height="{{handHeight}}"
                               ng-click="changePlayer()"></canvas>
+        </td>
+        <td>
+          <canvas id="store:1" width="{{storeWidth}}"
+                              height="{{storeHeight}}"></canvas>
         </td>
         <td><div align="center">
           <table border="black" ng-repeat="f in board.field">
@@ -61,6 +66,10 @@
               </td></div>
             </tr>
           </table>
+        </td>
+        <td>
+          <canvas id="store:0" width="{{storeWidth}}"
+                              height="{{storeHeight}}"></canvas>
         </td>
         <td>
           <canvas id="hand:0" width="50" height="400"></canvas>
