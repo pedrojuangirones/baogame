@@ -20,6 +20,7 @@ function generateBoard(numberOfFields,numberOfRows,numberOfHouses) {
           house={
                  id: j,
                  canvasId:('house:' + k +'.' + i + '.' + j),
+                 highlight: 0,
                  beans :[]
                }
           /*aBean=$scope.beanBag.pop();
@@ -54,6 +55,7 @@ function mirrorBoard(oldBoard) {
           house={
                  id: j,
                  canvasId:('house:' + k +'.' + i + '.' + j),
+                 highlight: oldBoard.field[(numF-1)-k].row[(numR-1)-i].house[(numH-1)-j].highlight,
                  beans : oldBoard.field[(numF-1)-k].row[(numR-1)-i].house[(numH-1)-j].beans
                }
           /*aBean=$scope.beanBag.pop();
@@ -92,16 +94,23 @@ function pickBeans(startCoords,endCoords, beanBag) {
 
 }
 
+function clearHouseHighlight(board){
+  var numF = board.numberOfFields;
+  var numR = board.numberOfRows;
+  var numH = board.numberOfHouses;
+    for (var k=0; k<numF; k++) {
+      for (var i=0; i<numR; i++) {
+        for (var j=0; j<numH; j++) {
+          board.field[k].row[i].house[j].highlight=0;
+        }
+      }
+    }
+    //return board;
+}
+
 function updateGame(gameID, board, hand, beanBag, store, socket) {
   paintGame(board, hand, beanBag, store)
 
   gameState = {gameID: gameID, board: board, hand: hand, beanBag: beanBag, store: store}
   socket.emit('gamestate', gameState)
-}
-
-
-function setBeanXY(bean,beans,canvas) {
-  var componentType = canvas.id.split(':')[0]
-
-  //alert('componentType')
 }

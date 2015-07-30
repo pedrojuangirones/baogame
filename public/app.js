@@ -263,6 +263,7 @@ game functions
        for (var i=0; i<2; i++) {
          $scope.hand[i] = {}
          $scope.hand[i].canvasId = ('hand:' + i);
+         $scope.hand[i].highlight = 0;
          $scope.hand[i].beans = []
        }
        var canvas = document.getElementById('beanBag');
@@ -340,7 +341,9 @@ Generate the board
         aBean = placeBean(aBean, $scope.hand[0].beans, canvas);
         $scope.hand[0].beans.push(aBean)
       }
-
+      clearHouseHighlight($scope.board);
+      $scope.hand[0].highlight = 1 ;
+      $scope.board.field[fieldNum].row[rowNum].house[houseNum].highlight = 2;
       $scope.$apply();
       updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
     }
@@ -361,6 +364,9 @@ Generate the board
           $scope.board.field[fieldNum].row[rowNum].house[houseNum].beans.push(aBean);
         }
 
+        clearHouseHighlight($scope.board);
+        $scope.hand[0].highlight = 2 ;
+        $scope.board.field[fieldNum].row[rowNum].house[houseNum].highlight = 1;
         $scope.$apply();
 
         updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
@@ -417,6 +423,7 @@ Generate the board
          $scope.board = mirrorBoard(gameState.board);
          for (var i=0; i<2; i++) {
            $scope.hand[i].beans = gameState.hand[(i+1)%2].beans;
+           $scope.hand[i].highlight = gameState.hand[(i+1)%2].highlight
          }
 
          $scope.store = gameState.store;

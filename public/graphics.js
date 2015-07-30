@@ -129,16 +129,43 @@ function paintComponent(component) {
     return
   }
 
-  //alert('canvas ' + component.canvasId)
-
   var canvas = document.getElementById(component.canvasId);
   clear(canvas)
-  //alert('canvas 2' + component.canvasId)
+  highlight(canvas, component.highlight)
   if (component.beans.length) {
     //alert('beans found')
     drawBeans(component.beans,canvas)
 
   }
+}
+
+function highlight(canvas,hightlight) {
+  switch(hightlight) {
+    case 0:
+    default:
+      return;
+      break;
+    case 1:
+      higlightColor = 'red';
+      break;
+    case 2:
+      higlightColor = 'pink';
+      break;
+  }
+
+  var context = canvas.getContext('2d');
+
+  context.beginPath();
+  context.rect(0, 0, canvas.width, canvas.height)
+  //context.arc(canvas.width/2, canvas.height/2, canvas.width/2, 0, 2 * Math.PI, false);
+  //context.lineWidth = 2*hightlight;
+  context.fillStyle = higlightColor;
+  context.fill();
+
+  context.strokeStyle = higlightColor;
+  context.stroke();
+
+  return true;
 }
 
 function clear(canvas) {
