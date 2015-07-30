@@ -6,6 +6,8 @@ angular.module('baoApp',[
 
    .controller('AppController', function ($scope) {
      var socket = io.connect();
+     $scope.houseWidth=75;
+     $scope.houseHeight=75;
        $scope.mousePos ='';
        $scope.mouseDown = false ;
        $scope.startSelCoords = {x:0,y:0};
@@ -28,6 +30,56 @@ angular.module('baoApp',[
        $scope.inviteAccepted = '';
 
        var gameID = 'default';
+       var activePlayer = false;
+
+       /*
+       game functions
+       */
+
+       var game = {};
+       game.mode = 'BAO-MALAWI';
+       $scope.numberOfFields =2;
+       $scope.numberOfRows = 2;
+       $scope.numberOfHouses=8;
+
+              $scope.numberOfBeans = 64;
+              $scope.beanBag = {}
+              $scope.beanBag.beans=[];
+              $scope.beanBag.canvasId = 'beanBag'
+
+              $scope.hand = [{}];
+              $scope.store = [{}]
+
+              for (var i=0; i<2; i++) {
+                $scope.hand[i] = {}
+                $scope.hand[i].canvasId = ('hand:' + i);
+                $scope.hand[i].highlight = 0;
+                $scope.hand[i].beans = []
+              }
+              var canvas = document.getElementById('beanBag');
+              for (var i=0; i<$scope.numberOfBeans; i++) {
+                var aBean={
+                           id:i,
+                           color: 'green',
+                           border: '#003300',
+                           x: 0,
+                           y: 0
+                         }
+                aBean = placeBean(aBean, $scope.beanBag.beans, canvas)
+                $scope.beanBag.beans.push(aBean);
+              }
+
+
+       /*
+       Generate the board
+       */
+           $scope.board =  generateBoard(game,
+                                         $scope.numberOfFields,
+                                         $scope.numberOfRows,
+                                         $scope.numberOfHouses);
+           drawBeans($scope.beanBag.beans,canvas)
+
+           $scope.$apply();
 
 
        /*
@@ -110,6 +162,43 @@ angular.module('baoApp',[
 
        };
 
+       $scope.blockUser = function (){
+         if (!checkConnected($scope.connected)) return;
+         if (document.inviteForm.onlineUsers.selectedIndex == -1) {
+           alert('No User selected')
+           return false;
+         } else {
+           var userToBlock = $scope.onUsers[document.inviteForm.onlineUsers.selectedIndex];
+           socket.emit('blockuser', {blockedByUser:$scope.user, blockedUser:userToBlock});
+         }
+       }
+
+       socket.on('blocklist', function(blockList) {
+         $scope.blockedUsers=[];
+         $scope.blockedByUsers=[];
+         //alert('in block list')
+         for (var j=0; j<blockList.blockedUser.length; j++) {
+           //alert(j)
+           $scope.blockedUsers[j]=blockList.blockedUser[j];
+         }
+         for (var j=0; j<blockList.blockedByUser.length; j++) {
+           //alert(j)
+           $scope.blockedByUsers[j]=blockList.blockedByUser[j];
+         }
+         updateBlocks();
+       })
+
+       $scope.unBlockUser = function() {
+         if (!checkConnected($scope.connected)) return;
+         if (document.inviteForm.onlineUsers.selectedIndex == -1) {
+           alert('No User selected')
+           return false;
+         } else {
+           var userToUnBlock = $scope.onUsers[document.inviteForm.onlineUsers.selectedIndex].split(' ')[0];
+           socket.emit('unblockuser', {blockedByUser:$scope.user, blockedUser:userToUnBlock});
+         }
+       }
+
        $scope.invite = function (){
          if (!checkConnected($scope.connected)) return;
 
@@ -159,43 +248,6 @@ angular.module('baoApp',[
          $scope.$apply();
        })
 
-       $scope.blockUser = function (){
-         if (!checkConnected($scope.connected)) return;
-         if (document.inviteForm.onlineUsers.selectedIndex == -1) {
-           alert('No User selected')
-           return false;
-         } else {
-           var userToBlock = $scope.onUsers[document.inviteForm.onlineUsers.selectedIndex];
-           socket.emit('blockuser', {blockedByUser:$scope.user, blockedUser:userToBlock});
-         }
-       }
-
-       socket.on('blocklist', function(blockList) {
-         $scope.blockedUsers=[];
-         $scope.blockedByUsers=[];
-         //alert('in block list')
-         for (var j=0; j<blockList.blockedUser.length; j++) {
-           //alert(j)
-           $scope.blockedUsers[j]=blockList.blockedUser[j];
-         }
-         for (var j=0; j<blockList.blockedByUser.length; j++) {
-           //alert(j)
-           $scope.blockedByUsers[j]=blockList.blockedByUser[j];
-         }
-         updateBlocks();
-       })
-
-       $scope.unBlockUser = function() {
-         if (!checkConnected($scope.connected)) return;
-         if (document.inviteForm.onlineUsers.selectedIndex == -1) {
-           alert('No User selected')
-           return false;
-         } else {
-           var userToUnBlock = $scope.onUsers[document.inviteForm.onlineUsers.selectedIndex].split(' ')[0];
-           socket.emit('unblockuser', {blockedByUser:$scope.user, blockedUser:userToUnBlock});
-         }
-       }
-
        $scope.acceptInvite = function (){
          if (!checkConnected($scope.connected)) return;
          if (document.inviteForm.invitesReceived.selectedIndex == -1) {
@@ -204,10 +256,13 @@ angular.module('baoApp',[
          } else {
            var gameHost = $scope.invitesReceived[document.inviteForm.invitesReceived.selectedIndex];
            socket.emit('acceptinvitation', {fromUser:gameHost, toUser:$scope.user});
+           gameID=gameHost + '-' + $scope.user;
+           activePlayer = true;
+           $scope.log = "Playing"
+           $scope.$apply();
+
          }
-         gameID=gameHost + '-' + $scope.user;
-         $scope.log = "Playing"
-         $scope.$apply();
+
          }
 
       socket.on('invitationaccepted', function(invitationCard){
@@ -222,6 +277,12 @@ angular.module('baoApp',[
            $scope.invitesMade=[];
            $scope.log = "Finally playing"
            $scope.$apply();
+           $scope.hand[0].highlight = 0;
+           $scope.hand[1].highlight = 2;
+           activePlayer = false;
+           populateBoard(game,$scope.board,$scope.beanBag)
+           updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
+
        })
 
        $scope.declineInvite = function (){
@@ -249,57 +310,62 @@ angular.module('baoApp',[
          $scope.$apply();
        })
 
-/*
-game functions
-*/
-       $scope.numberOfBeans = 64;
-       $scope.beanBag = {}
-       $scope.beanBag.beans=[];
-       $scope.beanBag.canvasId = 'beanBag'
+    $scope.changePlayer = function(){
+      if (gameID=='') {
+        alert('You are not playing')
+        return false;
+      }
 
-       $scope.hand = [{}];
-       $scope.store = [{}]
+      if (!activePlayer) {
+        alert('You are not playing')
+        return false;
+      }
+      activePlayer=false;
 
-       for (var i=0; i<2; i++) {
-         $scope.hand[i] = {}
-         $scope.hand[i].canvasId = ('hand:' + i);
-         $scope.hand[i].highlight = 0;
-         $scope.hand[i].beans = []
-       }
-       var canvas = document.getElementById('beanBag');
-       for (var i=0; i<$scope.numberOfBeans; i++) {
-         var aBean={
-                    id:i,
-                    color: 'green',
-                    border: '#003300',
-                    x: 0,
-                    y: 0
-                  }
-         aBean = placeBean(aBean, $scope.beanBag.beans, canvas)
-         $scope.beanBag.beans.push(aBean);
-       }
+      clearHouseHighlight($scope.board)
+      $scope.hand[0].highlight = 0;
+      $scope.hand[1].highlight = 2;
 
-      drawBeans($scope.beanBag.beans,canvas)
+      $scope.$apply();
 
-       $scope.numberOfFields =2;
-       $scope.numberOfRows = 2;
-       $scope.numberOfHouses=7;
-/*
-Generate the board
-*/
-    $scope.board =  generateBoard($scope.numberOfFields,
-                                  $scope.numberOfRows,
-                                  $scope.numberOfHouses);
+      socket.emit('changeplayer',gameID);
+      updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
 
-    $scope.$apply();
+    }
 
+    socket.on('changeplayer', function(){
+      activePlayer=true;
+//      $scope.hand[0].highlight = 2;
+//      $scope.hand[1].highlight = 0;
+
+    })
 
     $scope.doMouseDown = function(event){
+      if (gameID=='') {
+        alert('You are not playing')
+        return false;
+      }
+
+      if (!activePlayer) {
+        alert('You are not playing')
+        return false;
+      }
+
       $scope.mouseDown =true;
       $scope.startSelCoords = mouseCanvasCoords(event);
     }
 
     $scope.doMouseUp = function(event){
+      if (gameID=='') {
+        alert('You are not playing')
+        return false;
+      }
+
+      if (!activePlayer) {
+        alert('You are not playing')
+        return false;
+      }
+
       $scope.endSelCoords = mouseCanvasCoords(event);
     //  alert('up x: ' +  $scope.endSelCoords.x + ' y: '+ $scope.endSelCoords.y)
       var beans = pickBeans($scope.startSelCoords,$scope.endSelCoords,$scope.beanBag)
@@ -327,6 +393,16 @@ Generate the board
     }
 
     $scope.doHouseDblClick = function(event) {
+      if (gameID=='') {
+        alert('You are not playing')
+        return false;
+      }
+
+      if (!activePlayer) {
+        alert('You are not playing')
+        return false;
+      }
+
       var canvas = document.getElementById('hand:0');
       var args = event.target.id.split(':')[1].split('.');
       var fieldNum = args[0]
@@ -349,6 +425,16 @@ Generate the board
     }
 
       $scope.doHouseClick = function(event){
+        if (gameID=='') {
+          alert('You are not playing')
+          return false;
+        }
+
+        if (!activePlayer) {
+          alert('You are not playing')
+          return false;
+        }
+
         var canvas = event.target;
         var args = event.target.id.split(':')[1].split('.');
         var fieldNum = args[0]
@@ -365,7 +451,7 @@ Generate the board
         }
 
         clearHouseHighlight($scope.board);
-        $scope.hand[0].highlight = 2 ;
+        //$scope.hand[0].highlight = 2 ;
         $scope.board.field[fieldNum].row[rowNum].house[houseNum].highlight = 1;
         $scope.$apply();
 
@@ -375,6 +461,11 @@ Generate the board
 
        $scope.doClick = function(item, event) {
          if (gameID=='') {
+           alert('You are not playing')
+           return false;
+         }
+
+         if (!activePlayer) {
            alert('You are not playing')
            return false;
          }
@@ -394,6 +485,11 @@ Generate the board
 
        $scope.doDblClick = function (item, event) {
          if (gameID=='') {
+           alert('You are not playing')
+           return false;
+         }
+
+         if (!activePlayer) {
            alert('You are not playing')
            return false;
          }
@@ -430,7 +526,8 @@ Generate the board
 
          $scope.$apply();
 
-         paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store)
+         paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
+         $scope.$apply();
 
        })
 

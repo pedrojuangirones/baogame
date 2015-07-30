@@ -100,11 +100,18 @@ function drawCircle(canvas) {
 }
 
 function paintGame(board, hand, beanBag, store){
-
+//alert('paint beanBag')
   paintComponent(beanBag)
   if (store) {
     //alert('store')
   }
+//  alert('paintHands' + hand[0].highlight + ',' + hand[1].highlight)
+
+  //alert('paintHands' +hand.length)
+  for (var i=0; i<hand.length; i++) {
+    paintComponent(hand[i])
+  }
+//alert('paintHouses')
   for (var k=0; k<board.field.length; k++) {
     //alert('field ' + k + ' ' + board.field[k].id)
    for (var i=0; i<board.field[k].row.length; i++) {
@@ -115,10 +122,6 @@ function paintGame(board, hand, beanBag, store){
       }
 
     }
-  }
-
-  for (var i=0; i<hand.length; i++) {
-    paintComponent(hand[i])
   }
 
 }

@@ -2,7 +2,8 @@ angular.module('baoApp.game',[
     'baoApp.graphics'
 ])
 
-function generateBoard(numberOfFields,numberOfRows,numberOfHouses) {
+function generateBoard(game, numberOfFields,numberOfRows,numberOfHouses) {
+ var mode= game.mode;
     board = {
               numberOfFields: numberOfFields,
               numberOfRows: numberOfRows,
@@ -23,8 +24,7 @@ function generateBoard(numberOfFields,numberOfRows,numberOfHouses) {
                  highlight: 0,
                  beans :[]
                }
-          /*aBean=$scope.beanBag.pop();
-          house.beans.push(aBean);*/
+
           row.house.push(house);
         }
         field.row.push(row);
@@ -32,6 +32,38 @@ function generateBoard(numberOfFields,numberOfRows,numberOfHouses) {
       board.field.push(field);
     }
     return board;
+}
+
+function populateBoard(game,board,beanBag) {
+
+  var mode = game.mode
+  var numF = board.numberOfFields;
+  var numR = board.numberOfRows;
+  var numH = board.numberOfHouses;
+  alert('bean bag length' + beanBag.beans.length +
+           '\nmode' + mode +
+           '\numF' + numF +
+           '\n numR' + numR +
+          '\n numH' + numH)
+    for (var k=0; k<numF; k++) {
+      for (var i=0; i<numR; i++) {
+        for (var j=0; j<numH; j++) {
+
+          switch (mode) {
+            case 'BAO-MALAWI':
+
+              for (var l=0; l<2; l++) {
+                var aBean=beanBag.beans.pop();
+                alert('bean bag length' + beanBag.beans.length)
+                board.field[k].row[i].house[j].beans.push(aBean);
+            };
+              break;
+              default:
+          }
+        }
+      }
+    }
+
 }
 
 function mirrorBoard(oldBoard) {
@@ -110,7 +142,6 @@ function clearHouseHighlight(board){
 
 function updateGame(gameID, board, hand, beanBag, store, socket) {
   paintGame(board, hand, beanBag, store)
-
   gameState = {gameID: gameID, board: board, hand: hand, beanBag: beanBag, store: store}
   socket.emit('gamestate', gameState)
 }
