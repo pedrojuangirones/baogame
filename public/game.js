@@ -40,11 +40,11 @@ function populateBoard(game,board,beanBag) {
   var numF = board.numberOfFields;
   var numR = board.numberOfRows;
   var numH = board.numberOfHouses;
-  alert('bean bag length' + beanBag.beans.length +
+/*  alert('bean bag length' + beanBag.beans.length +
            '\nmode' + mode +
            '\numF' + numF +
            '\n numR' + numR +
-          '\n numH' + numH)
+          '\n numH' + numH)*/
     for (var k=0; k<numF; k++) {
       for (var i=0; i<numR; i++) {
         for (var j=0; j<numH; j++) {
@@ -54,7 +54,8 @@ function populateBoard(game,board,beanBag) {
 
               for (var l=0; l<2; l++) {
                 var aBean=beanBag.beans.pop();
-                alert('bean bag length' + beanBag.beans.length)
+                var canvas = document.getElementById(board.field[k].row[i].house[j].canvasId);
+                aBean = placeBean(aBean, board.field[k].row[i].house[j].beans, canvas)
                 board.field[k].row[i].house[j].beans.push(aBean);
             };
               break;
