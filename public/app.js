@@ -35,7 +35,9 @@ angular.module('baoApp',[
        $scope.invitesMade = [];
        $scope.inviteAccepted = '';
 
+       $scope.games = getGames();
        var gameID = 'default';
+       var gameState = {}
        var activePlayer = true;
 
        /*
@@ -84,6 +86,8 @@ angular.module('baoApp',[
                                          $scope.numberOfRows,
                                          $scope.numberOfHouses);
 
+           var gameState=setupGame('token');
+           alert('game state.mode ' + gameState.mode)
            $scope.$apply();
            drawBeans($scope.beanBag.beans,canvas)
 

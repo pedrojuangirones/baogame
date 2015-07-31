@@ -36,7 +36,18 @@
                         <li class="toplink3">Bao online</li>
                         <li class="toplink1">Contact</li>
 
-                      </ul>		</TD>
+                      </ul>
+    <p>
+      <form name="gameForm">
+      <p>Games you can play</p>
+      <select  name="gameTypes" size="5" style="width: 217px;" ng-model='selectedGame'>
+        <option ng-repeat='aGame in games'> {{aGame}}
+      </select><br>
+       <input type='button' value="Choose" ng-click ="chooseGame()"/>
+      </form>
+
+    </p>
+  </TD>
   <TD WIDTH=60%>
     <table class="doNoSelect" align="center" id="board"  border="black">
       <tr><td colspan = "5" align="center">

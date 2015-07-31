@@ -1,6 +1,73 @@
 angular.module('baoApp.game',[
     'baoApp.graphics'
 ])
+function getGames(){
+  var games = [
+    'BAO-MALAWI',
+    'Bao la kiswahili',
+    'Bao la kujifunza',
+    'Omweso',
+    'Congkak'
+  ]
+
+  return games;
+}
+function setupGame(mode){
+
+/*
+  var numberOfFields =2;
+  var numberOfRows = 2;
+  var numberOfHouses=8;
+
+  var numberOfBeans = 64;
+  var beanBag = {}
+  beanBag.beans=[];
+  beanBag.canvasId = 'beanBag'
+  alert('setup')
+  var hand = [{}];
+  var store = [{}]
+
+  for (var i=0; i<2; i++) {
+    hand[i] = {}
+    hand[i].canvasId = ('hand:' + i);
+    hand[i].highlight = 0;
+    hand[i].beans = []
+  }
+
+  alert('setup')
+
+  var canvas = document.getElementById('beanBag');
+  for (var i=0; i<numberOfBeans; i++) {
+    var aBean={
+               id:i,
+               color: 'green',
+               border: '#003300',
+               x: 0,
+               y: 0
+             }
+    aBean = placeBean(aBean, beanBag.beans, canvas)
+    beanBag.beans.push(aBean);
+  }
+
+  /*
+  Generate the board
+
+  var board =  generateBoard(game,
+                                $scope.numberOfFields,
+                                $scope.numberOfRows,
+                                $scope.numberOfHouses);
+
+  //var gameState = {gameID: gameID, board: board, hand: hand, beanBag: beanBag, store: store}
+  /*       var gameState = setupGame(game.mode)
+
+         $scope.board = gameState.board;
+         $scope.hand = gameState.hand;
+         $scope.store = gameState.store;
+         $scope.beanBag = gameState.beanBag;
+*/
+  var gameState = {mode: mode}; //, board: board, hand: hand, beanBag: beanBag, store: store}
+  return gameState;
+}
 
 function generateBoard(game, numberOfFields,numberOfRows,numberOfHouses) {
  var mode= game.mode;
