@@ -1,76 +1,100 @@
 angular.module('baoApp.game',[
     'baoApp.graphics'
 ])
-function getGames(){
-  var games = [
-    'BAO-MALAWI',
-    'Bao la kiswahili',
-    'Bao la kujifunza',
-    'Omweso',
-    'Congkak'
-  ]
-
-  return games;
-}
-function setupGame(mode){
-
-/*
-  var numberOfFields =2;
-  var numberOfRows = 2;
-  var numberOfHouses=8;
-
-  var numberOfBeans = 64;
-  var beanBag = {}
-  beanBag.beans=[];
-  beanBag.canvasId = 'beanBag'
-  alert('setup')
-  var hand = [{}];
-  var store = [{}]
-
+function setupBoard(boardType, $scope){
+  var store = []
   for (var i=0; i<2; i++) {
-    hand[i] = {}
-    hand[i].canvasId = ('hand:' + i);
-    hand[i].highlight = 0;
-    hand[i].beans = []
+    store[i] = {}
+    store[i].canvasId = ('store:' + i);
+    store[i].highlight = 0;
+    store[i].beans = []
   }
 
-  alert('setup')
 
-  var canvas = document.getElementById('beanBag');
-  for (var i=0; i<numberOfBeans; i++) {
-    var aBean={
-               id:i,
-               color: 'green',
-               border: '#003300',
-               x: 0,
-               y: 0
-             }
-    aBean = placeBean(aBean, beanBag.beans, canvas)
-    beanBag.beans.push(aBean);
+  var hand = []
+    for (var i=0; i<2; i++) {
+      hand[i] = {}
+      hand[i].canvasId = ('hand:' + i);
+      hand[i].highlight = 0;
+      hand[i].beans = []
+    }
+
+  switch(boardType) {
+    case 'Bao':
+    case 'Omweso':
+      var numberOfFields =2;
+      var numberOfRows = 2;
+      var numberOfHouses=8;
+
+// Both store camvas in the DOM are defined from the first element of the array
+      store[0].storeWidth=0;
+      store[0].storeHeight=0;
+      break;
+  case 'Hawalis':
+    var numberOfFields =2;
+    var numberOfRows = 2;
+    var numberOfHouses=7;
+
+  // Both store camvas in the DOM are defined from the first element of the array
+    store[0].storeWidth=0;
+    store[0].storeHeight=0;
+    break;
+  case 'Congkak (x5)':
+    var numberOfFields =2;
+    var numberOfRows = 1;
+    var numberOfHouses=5;
+
+// Both store camvas in the DOM are defined from the first element of the array
+    store[0].storeWidth=150;
+    store[0].storeHeight=150;
+    break;
+  case 'Congkak (x7)':
+    var numberOfFields =2;
+    var numberOfRows = 1;
+    var numberOfHouses=7;
+
+// Both store camvas in the DOM are defined from the first element of the array
+    store[0].storeWidth=150;
+    store[0].storeHeight=150;
+    break;
+  default:
+      alert('This board is not yet implemented')
+      return;
+      break;
   }
+
 
   /*
   Generate the board
-
-  var board =  generateBoard(game,
-                                $scope.numberOfFields,
-                                $scope.numberOfRows,
-                                $scope.numberOfHouses);
-
-  //var gameState = {gameID: gameID, board: board, hand: hand, beanBag: beanBag, store: store}
-  /*       var gameState = setupGame(game.mode)
-
-         $scope.board = gameState.board;
-         $scope.hand = gameState.hand;
-         $scope.store = gameState.store;
-         $scope.beanBag = gameState.beanBag;
 */
-  var gameState = {mode: mode}; //, board: board, hand: hand, beanBag: beanBag, store: store}
+  var board =  generateBoard(
+                                numberOfFields,
+                                numberOfRows,
+                                numberOfHouses);
+
+
+  var beanBag = {}
+  beanBag.beans=[];
+  beanBag.canvasId = 'beanBag'
+
+  $scope.$apply();
+  //populateBoard(gameName,allTheBeans,board,beanBag, hand);
+
+/*
+  var bagCanvas = document.getElementById('beanBag');
+
+  for (var i=0; i<numberOfBeans; i++) {
+    var aBean=allTheBeans.pop();
+    aBean = placeBean(aBean, beanBag.beans, bagCanvas)
+    beanBag.beans.push(aBean);
+  }*/
+
+
+  var gameState = {boardType: boardType, hand: hand, board: board, store: store, beanBag: beanBag}; //, board: board, hand: hand, beanBag: beanBag, store: store}
   return gameState;
 }
 
-function generateBoard(game, numberOfFields,numberOfRows,numberOfHouses) {
- var mode= game.mode;
+function generateBoard(numberOfFields,numberOfRows,numberOfHouses) {
     board = {
               numberOfFields: numberOfFields,
               numberOfRows: numberOfRows,
@@ -101,37 +125,95 @@ function generateBoard(game, numberOfFields,numberOfRows,numberOfHouses) {
     return board;
 }
 
-function populateBoard(game,board,beanBag) {
+function   populateBoard(gameState) {
 
-  var mode = game.mode
-  var numF = board.numberOfFields;
-  var numR = board.numberOfRows;
-  var numH = board.numberOfHouses;
-/*  alert('bean bag length' + beanBag.beans.length +
-           '\nmode' + mode +
-           '\numF' + numF +
-           '\n numR' + numR +
-          '\n numH' + numH)*/
-    for (var k=0; k<numF; k++) {
-      for (var i=0; i<numR; i++) {
-        for (var j=0; j<numH; j++) {
+  gameName = gameState.gameName;
+  board = gameState.board;
+  beanBag = gameState.beanBag
+  hand = gameState.hand;
 
-          switch (mode) {
+  for (var k=0; k<board.field.length; k++) {
+      for (var i=0; i<board.field[k].row.length; i++) {
+        for (var j=0; j<board.field[k].row[i].house.length; j++) {
+
+          switch (gameName) {
+            /*
+            We deal first with boards that have the same number of
+            seeds in each house */
+            case 'Hawalis':
             case 'BAO-MALAWI':
-
-              for (var l=0; l<2; l++) {
-                var aBean=beanBag.beans.pop();
-                var canvas = document.getElementById(board.field[k].row[i].house[j].canvasId);
-                aBean = placeBean(aBean, board.field[k].row[i].house[j].beans, canvas)
+              var numBeansInHouse = 2;
+              var canvas = document.getElementById(board.field[k].row[i].house[j].canvasId);
+              for (var l=0; l<numBeansInHouse; l++) {
+                var aBean=createBean();
+                aBean = placeBean(aBean, board.field[k].row[i].house[j].beans, canvas);
                 board.field[k].row[i].house[j].beans.push(aBean);
-            };
+              };
               break;
-              default:
+            case 'Congkak':
+              var numBeansInHouse = 7;
+              var canvas = document.getElementById(board.field[k].row[i].house[j].canvasId);
+              for (var l=0; l<numBeansInHouse; l++) {
+                var aBean=createBean();
+                aBean = placeBean(aBean, board.field[k].row[i].house[j].beans, canvas);
+                board.field[k].row[i].house[j].beans.push(aBean);
+              };
+              break;
+            case 'Omweso':
+              var numBeansInHouse = 4;
+              var canvas = document.getElementById(board.field[k].row[i].house[j].canvasId);
+              if (((k==0) && (i==0)) || ((k=1)&&(i==i))) {
+                for (var l=0; l<numBeansInHouse; l++) {
+                  var aBean=createBean();
+                  aBean = placeBean(aBean, board.field[k].row[i].house[j].beans, canvas);
+                  board.field[k].row[i].house[j].beans.push(aBean);
+                };
+                
+              }
+              break;
+
+          default:
+              alert('This game is not available');
+              return;
           }
         }
       }
     }
 
+}
+
+function createBean(){
+  var aBean={
+             id:0,
+             color: 'green',
+             border: '#003300',
+             x: 0,
+             y: 0
+           }
+   return aBean;
+}
+
+function getBoards() {
+  var boards = [
+    'Bao',
+    'Omweso',
+    'Hawalis',
+    'Congkak (x5)',
+    'Congkak (x7)'
+  ]
+  return boards;
+}
+function getGames(){
+  var games = [
+    'BAO-MALAWI',
+    'Bao la kiswahili',
+    'Bao la kujifunza',
+    'Hawalis',
+    'Omweso',
+    'Congkak'
+  ]
+
+  return games;
 }
 
 function mirrorBoard(oldBoard) {

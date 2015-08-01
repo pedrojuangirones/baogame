@@ -10,8 +10,8 @@ angular.module('baoApp',[
      $scope.houseHeight=75;
      $scope.handWidth= 50;
      $scope.handHeight = 400;
-     $scope.storeWidth = 0;
-     $scope.storeHeight = 0;
+    // $scope.storeWidth = 0;
+    // $scope.storeHeight = 0;
      $scope.beanBagWidth = 500; //value overwritten in html until timeout
      $scope.beanBagHeight = 35;
        $scope.mousePos ='';
@@ -35,61 +35,26 @@ angular.module('baoApp',[
        $scope.invitesMade = [];
        $scope.inviteAccepted = '';
 
-       $scope.games = getGames();
+       $scope.boardTypes = getBoards();
+       $scope.boardType = 'Bao'
+       $scope.gameNames = getGames();
+       $scope.gameName = 'BAO-MALAWI'
        var gameID = 'default';
-       var gameState = {}
        var activePlayer = true;
 
        /*
        game functions
        */
 
-       var game = {};
-       game.mode = 'BAO-MALAWI';
-       $scope.numberOfFields =2;
-       $scope.numberOfRows = 2;
-       $scope.numberOfHouses=8;
-
-              $scope.numberOfBeans = 64;
-              $scope.beanBag = {}
-              $scope.beanBag.beans=[];
-              $scope.beanBag.canvasId = 'beanBag'
-
-              $scope.hand = [{}];
-              $scope.store = [{}]
-
-              for (var i=0; i<2; i++) {
-                $scope.hand[i] = {}
-                $scope.hand[i].canvasId = ('hand:' + i);
-                $scope.hand[i].highlight = 0;
-                $scope.hand[i].beans = []
-              }
-              var canvas = document.getElementById('beanBag');
-              for (var i=0; i<$scope.numberOfBeans; i++) {
-                var aBean={
-                           id:i,
-                           color: 'green',
-                           border: '#003300',
-                           x: 0,
-                           y: 0
-                         }
-                aBean = placeBean(aBean, $scope.beanBag.beans, canvas)
-                $scope.beanBag.beans.push(aBean);
-              }
-
-
-       /*
-       Generate the board
-       */
-           $scope.board =  generateBoard(game,
-                                         $scope.numberOfFields,
-                                         $scope.numberOfRows,
-                                         $scope.numberOfHouses);
-
-           var gameState=setupGame('token');
-           alert('game state.mode ' + gameState.mode)
+           var gameState;
+           gameState=setupBoard($scope.boardType || 'Bao', $scope);
+           $scope.hand = gameState.hand;
+           $scope.board = gameState.board;
+           $scope.beanBag = gameState.beanBag;
+           $scope.store = gameState.store;
            $scope.$apply();
-           drawBeans($scope.beanBag.beans,canvas)
+           //var bagCanvas = document.getElementById('beanBag');
+           //drawBeans($scope.beanBag.beans,bagCanvas)
 
 
        /*
@@ -286,11 +251,11 @@ angular.module('baoApp',[
            }
            $scope.invitesMade=[];
            $scope.log = "Finally playing"
-           $scope.$apply();
            $scope.hand[0].highlight = 0;
            $scope.hand[1].highlight = 2;
            activePlayer = false;
-           populateBoard(game,$scope.board,$scope.beanBag)
+           $scope.$apply()
+           //populateBoard(game,$scope.board,$scope.beanBag)
            updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
 
        })
@@ -320,6 +285,40 @@ angular.module('baoApp',[
          $scope.$apply();
        })
 
+    $scope.chooseBoard= function(){
+      if (document.gameForm.boardTypes.selectedIndex == -1) {
+        alert('No game selected')
+        return false;
+      }
+      $scope.boardType = $scope.boardTypes[document.gameForm.boardTypes.selectedIndex];;
+      gameState=setupBoard($scope.boardType || 'Bao', $scope);
+      $scope.hand = gameState.hand;
+      $scope.board = gameState.board;
+      $scope.beanBag = gameState.beanBag;
+      $scope.store = gameState.store;
+      $scope.$apply();
+
+    }
+
+    $scope.chooseGame = function(){
+      if (document.gameForm.gameNames.selectedIndex == -1) {
+        alert('No game selected')
+        return false;
+      }
+      $scope.gameName = $scope.gameNames[document.gameForm.gameNames.selectedIndex];
+
+      gameState = {boardType: $scope.boardType,
+                   gameName: $scope.gameName,
+                   hand: $scope.hand,
+                   board: $scope.board,
+                   store: $scope.store,
+                   beanBag: $scope.beanBag
+                 };
+      populateBoard(gameState);
+
+      paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store)
+
+    }
     $scope.changePlayer = function(){
       if (gameID=='') {
         alert('You are not playing')
