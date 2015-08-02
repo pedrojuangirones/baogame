@@ -11,7 +11,7 @@
 
   </TD>
   <TD  WIDTH=60%>
-    <h1>{{pageTitle}}</h1>
+    <h1>{{gameName}}</h1>
 
   </TD>
   <TD WIDTH=20%>
@@ -36,29 +36,61 @@
                         <li class="toplink3">Bao online</li>
                         <li class="toplink1">Contact</li>
 
-                      </ul>		</TD>
+                      </ul>
+    <p>
+      <form name="gameForm">
+      <p>Available Boards</p>
+      <select  name="boardTypes" size="5" style="width: 217px;" ng-model='selectedBoard'>
+        <option ng-repeat='boardType in boardTypes'> {{boardType}}
+      </select><br>
+       <input type='button' value="Choose" ng-click ="chooseBoard()"/>
+       <p>Available Games</p>
+       <select  name="gameNames" size="5" style="width: 217px;" ng-model='selectedGame'>
+         <option ng-repeat='aGameName in gameNames'> {{aGameName}}
+       </select><br>
+        <input type='button' value="Choose" ng-click ="chooseGame()"/>
+
+      </form>
+
+    </p>
+  </TD>
   <TD WIDTH=60%>
     <table class="doNoSelect" align="center" id="board"  border="black">
-      <tr><td colspan = "3">
-        <canvas id="beanBag" width="600" height="35" ng-mousemove="doMove($event)"
-                                                    ng-mousedown="doMouseDown($event)"
-                                                    ng-mouseup="doMouseUp($event)">
+      <tr><td colspan = "5" align="center">
+         <!-- width="{{beanBagWidth}}" height="{{beanBagHeight}}" -->
+
+
+        <canvas id="beanBag" width=500 height=35
+                             ng-mousemove="doMove($event)"
+                             ng-mousedown="doMouseDown($event)"
+                             ng-mouseup="doMouseUp($event)" >
           <p>Sorry: Browser does not support Graphics Canvas</p></canvas>
       </td></tr>
       <tr>
         <td>
-          <canvas id="hand:1" width="50" height="400"></canvas>
+          <canvas id="hand:1" width="{{handWidth}}" height="{{handHeight}}"
+                              ng-click="changePlayer()"></canvas>
+        </td>
+        <td>
+          <canvas id="store:1" width="{{store[0].storeWidth}}"
+                              height="{{store[0].storeHeight}}"
+                              ng-click="doStoreClick($event)"></canvas>
         </td>
         <td><div align="center">
           <table border="black" ng-repeat="f in board.field">
             <tr ng-repeat="r in f.row">
               <td ng-repeat="h in r.house">
-                <canvas  id="{{h.canvasId}}" width="100" height="100"
+                <canvas  id="{{h.canvasId}}" width="{{houseWidth}}" height="{{houseHeight}}"
                          ng-click="doHouseClick($event)"
                          ng-dblclick="doHouseDblClick($event)"></canvas>
               </td></div>
             </tr>
           </table>
+        </td>
+        <td>
+          <canvas id="store:0" width="{{store[0].storeWidth}}"
+                              height="{{store[0].storeHeight}}"
+                              ng-click="doStoreClick($event)"></canvas>
         </td>
         <td>
           <canvas id="hand:0" width="50" height="400"></canvas>

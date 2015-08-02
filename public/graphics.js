@@ -4,6 +4,7 @@ function placeBean(bean, beans, canvas) {
   var beanRadius = 5;
   var componentType = getComponenType(canvas)
   switch (componentType) {
+    case 'store':
     case 'house':
     for (var i=0; i<(beans.length+1); i++) {
       bean.x = (10 +15*(Math.floor(i/4)));
@@ -38,7 +39,7 @@ function placeBean(bean, beans, canvas) {
     }
         break;
     default:
-     alert('Wrong canvas ID')
+     alert('Wrong canvas ID place')
   }
   return bean
 }
@@ -61,6 +62,7 @@ function drawBean(bean,canvas){
 
   var componentType = getComponenType(canvas)
   switch (componentType) {
+    case 'store':
     case 'house':
         finalX=bean.x ; //+ canvas.width/2;
         finalY=bean.y ; //+ canvas.height/2;
@@ -71,7 +73,7 @@ function drawBean(bean,canvas){
         finalY=bean.y;
         break;
     default:
-     alert ('Wrong canvas ID')
+     alert ('Wrong canvas ID draw')
   }
 
   context.beginPath();
@@ -100,11 +102,20 @@ function drawCircle(canvas) {
 }
 
 function paintGame(board, hand, beanBag, store){
-
+//alert('paint beanBag')
   paintComponent(beanBag)
   if (store) {
-    //alert('store')
+    for (var i=0; i<store.length; i++) {
+      paintComponent(store[i])
+    }
   }
+//  alert('paintHands' + hand[0].highlight + ',' + hand[1].highlight)
+
+  //alert('paintHands' +hand.length)
+  for (var i=0; i<hand.length; i++) {
+    paintComponent(hand[i])
+  }
+//alert('paintHouses')
   for (var k=0; k<board.field.length; k++) {
     //alert('field ' + k + ' ' + board.field[k].id)
    for (var i=0; i<board.field[k].row.length; i++) {
@@ -117,10 +128,6 @@ function paintGame(board, hand, beanBag, store){
     }
   }
 
-  for (var i=0; i<hand.length; i++) {
-    paintComponent(hand[i])
-  }
-
 }
 
 function paintComponent(component) {
@@ -129,16 +136,43 @@ function paintComponent(component) {
     return
   }
 
-  //alert('canvas ' + component.canvasId)
-
   var canvas = document.getElementById(component.canvasId);
   clear(canvas)
-  //alert('canvas 2' + component.canvasId)
+  highlight(canvas, component.highlight)
   if (component.beans.length) {
     //alert('beans found')
     drawBeans(component.beans,canvas)
 
   }
+}
+
+function highlight(canvas,hightlight) {
+  switch(hightlight) {
+    case 0:
+    default:
+      return;
+      break;
+    case 1:
+      higlightColor = 'red';
+      break;
+    case 2:
+      higlightColor = 'pink';
+      break;
+  }
+
+  var context = canvas.getContext('2d');
+
+  context.beginPath();
+  context.rect(0, 0, canvas.width, canvas.height)
+  //context.arc(canvas.width/2, canvas.height/2, canvas.width/2, 0, 2 * Math.PI, false);
+  //context.lineWidth = 2*hightlight;
+  context.fillStyle = higlightColor;
+  context.fill();
+
+  context.strokeStyle = higlightColor;
+  context.stroke();
+
+  return true;
 }
 
 function clear(canvas) {

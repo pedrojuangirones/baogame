@@ -159,7 +159,13 @@ io.on('connection', function(socket) {
     socket.join(gameID);
   })
 
+  socket.on('changeplayer', function(gameID){
+    console.log('User ' +socket.username + ' has joined game' + gameID)
+    socket.to(gameID).emit('changeplayer', gameID);
+  })
+
   socket.on('gamestate', function(gameState) {
+    console.log('gamestate transferred. gameID= ' + gameState.gameID)
     socket.to(gameState.gameID).emit('gamestate', gameState);
   })
 
