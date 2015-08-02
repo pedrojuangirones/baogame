@@ -157,7 +157,7 @@ io.on('connection', function(socket) {
   })
 
   socket.on('gamestate', function(gameState) {
-    console.log('gamestate: ' + JSON.stringify(gameState.hand))
+    console.log('gamestate transferred. gameID= ' + gameState.gameID)
     socket.to(gameState.gameID).emit('gamestate', gameState);
   })
 

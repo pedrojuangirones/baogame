@@ -20,8 +20,7 @@ function setupBoard(boardType, $scope){
     }
 
   switch(boardType) {
-    case 'Bao':
-    case 'Omweso':
+    case 'Bao/Omweso':
       var numberOfFields =2;
       var numberOfRows = 2;
       var numberOfHouses=8;
@@ -132,21 +131,42 @@ function   populateBoard(gameState) {
   beanBag = gameState.beanBag
   hand = gameState.hand;
 
+  /*
+  Place beans in the board
+  */
   for (var k=0; k<board.field.length; k++) {
       for (var i=0; i<board.field[k].row.length; i++) {
         for (var j=0; j<board.field[k].row[i].house.length; j++) {
-
+          board.field[k].row[i].house[j].beans=[];
           switch (gameName) {
             /*
             We deal first with boards that have the same number of
             seeds in each house */
             case 'Hawalis':
-            case 'BAO-MALAWI':
+            case 'Bao la kujifunza':
               var numBeansInHouse = 2;
               var canvas = document.getElementById(board.field[k].row[i].house[j].canvasId);
               for (var l=0; l<numBeansInHouse; l++) {
                 var aBean=createBean();
                 aBean = placeBean(aBean, board.field[k].row[i].house[j].beans, canvas);
+                board.field[k].row[i].house[j].beans.push(aBean);
+              };
+              break;
+
+            case 'Bao la kiswahili':
+              var houseCanvas = document.getElementById(board.field[k].row[i].house[j].canvasId);
+              if (((k==0) && (i==1) && (j==3)) || ((k==1)&&(i==0) && (j==4))) {
+                var numBeansInHouse = 6;
+              } else if (((k==0) && (i==1) && ((j==1) || (j==2)))
+                        || ((k==1) && (i==0) && ((j==5) || (j==6))) ){
+                var numBeansInHouse = 2;
+              } else {
+                var numBeansInHouse = 0;
+              }
+
+              for (var l=0; l<numBeansInHouse; l++) {
+                var aBean=createBean();
+                aBean = placeBean(aBean, board.field[k].row[i].house[j].beans, houseCanvas);
                 board.field[k].row[i].house[j].beans.push(aBean);
               };
               break;
@@ -162,13 +182,13 @@ function   populateBoard(gameState) {
             case 'Omweso':
               var numBeansInHouse = 4;
               var canvas = document.getElementById(board.field[k].row[i].house[j].canvasId);
-              if (((k==0) && (i==0)) || ((k=1)&&(i==i))) {
+              if (((k==0) && (i==0)) || ((k==1)&&(i==1))) {
                 for (var l=0; l<numBeansInHouse; l++) {
                   var aBean=createBean();
                   aBean = placeBean(aBean, board.field[k].row[i].house[j].beans, canvas);
                   board.field[k].row[i].house[j].beans.push(aBean);
                 };
-                
+
               }
               break;
 
@@ -180,6 +200,29 @@ function   populateBoard(gameState) {
       }
     }
 
+    /*
+    Place beans in the hands
+    */
+
+    switch (gameName) {
+      case 'Bao la kiswahili':
+        var numBeansInHand = 22;
+        break;
+      default:
+        var numBeansInHand = 0;
+  }
+
+
+    for (var i=0; i<hand.length; i++ ) {
+      var handCanvas = document.getElementById(hand[i].canvasId);
+      hand[i].beans=[];
+
+      for (var l=0; l<numBeansInHand; l++) {
+        var aBean=createBean();
+        aBean = placeBean(aBean, hand[i].beans, handCanvas);
+        hand[i].beans.push(aBean);
+      };
+    }
 }
 
 function createBean(){
@@ -195,8 +238,7 @@ function createBean(){
 
 function getBoards() {
   var boards = [
-    'Bao',
-    'Omweso',
+    'Bao/Omweso',
     'Hawalis',
     'Congkak (x5)',
     'Congkak (x7)'
@@ -205,9 +247,8 @@ function getBoards() {
 }
 function getGames(){
   var games = [
-    'BAO-MALAWI',
-    'Bao la kiswahili',
     'Bao la kujifunza',
+    'Bao la kiswahili',
     'Hawalis',
     'Omweso',
     'Congkak'
@@ -276,7 +317,7 @@ function pickBeans(startCoords,endCoords, beanBag) {
 
 }
 
-function clearHouseHighlight(board){
+function clearHighlight(board, store){
   var numF = board.numberOfFields;
   var numR = board.numberOfRows;
   var numH = board.numberOfHouses;
@@ -287,6 +328,9 @@ function clearHouseHighlight(board){
         }
       }
     }
+  for (var i=0; i<2; i++) {
+    store[i].highlight=0;
+  }
     //return board;
 }
 

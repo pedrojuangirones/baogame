@@ -4,6 +4,7 @@ function placeBean(bean, beans, canvas) {
   var beanRadius = 5;
   var componentType = getComponenType(canvas)
   switch (componentType) {
+    case 'store':
     case 'house':
     for (var i=0; i<(beans.length+1); i++) {
       bean.x = (10 +15*(Math.floor(i/4)));
@@ -38,7 +39,7 @@ function placeBean(bean, beans, canvas) {
     }
         break;
     default:
-     alert('Wrong canvas ID')
+     alert('Wrong canvas ID place')
   }
   return bean
 }
@@ -61,6 +62,7 @@ function drawBean(bean,canvas){
 
   var componentType = getComponenType(canvas)
   switch (componentType) {
+    case 'store':
     case 'house':
         finalX=bean.x ; //+ canvas.width/2;
         finalY=bean.y ; //+ canvas.height/2;
@@ -71,7 +73,7 @@ function drawBean(bean,canvas){
         finalY=bean.y;
         break;
     default:
-     alert ('Wrong canvas ID')
+     alert ('Wrong canvas ID draw')
   }
 
   context.beginPath();
@@ -103,7 +105,9 @@ function paintGame(board, hand, beanBag, store){
 //alert('paint beanBag')
   paintComponent(beanBag)
   if (store) {
-    //alert('store')
+    for (var i=0; i<store.length; i++) {
+      paintComponent(store[i])
+    }
   }
 //  alert('paintHands' + hand[0].highlight + ',' + hand[1].highlight)
 

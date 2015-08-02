@@ -36,9 +36,9 @@ angular.module('baoApp',[
        $scope.inviteAccepted = '';
 
        $scope.boardTypes = getBoards();
-       $scope.boardType = 'Bao'
+       $scope.boardType = 'Congkak (x5)';//'Bao/Omweso'
        $scope.gameNames = getGames();
-       $scope.gameName = 'BAO-MALAWI'
+       $scope.gameName = 'Congkak';//'Bao la kujifunza'
        var gameID = 'default';
        var activePlayer = true;
 
@@ -331,7 +331,7 @@ angular.module('baoApp',[
       }
       activePlayer=false;
 
-      clearHouseHighlight($scope.board)
+      clearHighlight($scope.board, $scope.store);
       $scope.hand[0].highlight = 0;
       $scope.hand[1].highlight = 2;
 
@@ -426,47 +426,80 @@ angular.module('baoApp',[
         aBean = placeBean(aBean, $scope.hand[0].beans, canvas);
         $scope.hand[0].beans.push(aBean)
       }
-      clearHouseHighlight($scope.board);
+      clearHighlight($scope.board, $scope.store);
       $scope.hand[0].highlight = 1 ;
       $scope.board.field[fieldNum].row[rowNum].house[houseNum].highlight = 2;
       $scope.$apply();
       updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
     }
 
-      $scope.doHouseClick = function(event){
-        if (gameID=='') {
-          alert('You are not playing')
-          return false;
-        }
-
-        if (!activePlayer) {
-          alert('You are not playing')
-          return false;
-        }
-
-        var canvas = event.target;
-        var args = event.target.id.split(':')[1].split('.');
-        var fieldNum = args[0]
-        var rowNum = args[1];
-        var houseNum = args[2];
-
-
-        if ($scope.hand[0].beans.length > 0 ) {
-          var aBean = $scope.hand[0].beans.pop();
-          aBean = placeBean(aBean,
-                           $scope.board.field[fieldNum].row[rowNum].house[houseNum].beans,
-                           canvas)
-          $scope.board.field[fieldNum].row[rowNum].house[houseNum].beans.push(aBean);
-        }
-
-        clearHouseHighlight($scope.board);
-        //$scope.hand[0].highlight = 2 ;
-        $scope.board.field[fieldNum].row[rowNum].house[houseNum].highlight = 1;
-        $scope.$apply();
-
-        updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
-
+    $scope.doHouseClick = function(event){
+      if (gameID=='') {
+        alert('You are not playing')
+        return false;
       }
+
+      if (!activePlayer) {
+        alert('You are not playing')
+        return false;
+      }
+
+      var canvas = event.target;
+      var args = event.target.id.split(':')[1].split('.');
+      var fieldNum = args[0]
+      var rowNum = args[1];
+      var houseNum = args[2];
+
+
+      if ($scope.hand[0].beans.length > 0 ) {
+        var aBean = $scope.hand[0].beans.pop();
+        aBean = placeBean(aBean,
+                         $scope.board.field[fieldNum].row[rowNum].house[houseNum].beans,
+                         canvas)
+        $scope.board.field[fieldNum].row[rowNum].house[houseNum].beans.push(aBean);
+      }
+
+      clearHighlight($scope.board, $scope.store);
+      $scope.hand[0].highlight = 2 ;
+      $scope.board.field[fieldNum].row[rowNum].house[houseNum].highlight = 1;
+      $scope.$apply();
+
+      updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
+
+    }
+
+    $scope.doStoreClick = function(event){
+      if (gameID=='') {
+        alert('You are not playing')
+        return false;
+      }
+
+      if (!activePlayer) {
+        alert('You are not playing')
+        return false;
+      }
+
+      var canvas = event.target;
+      var storeNum = event.target.id.split(':')[1];
+
+ //alert('store ' + storeNum)
+
+      if ($scope.hand[0].beans.length > 0 ) {
+        var aBean = $scope.hand[0].beans.pop();
+        aBean = placeBean(aBean,
+                         $scope.store[storeNum].beans,
+                         canvas)
+        $scope.store[storeNum].beans.push(aBean);
+      }
+
+      clearHighlight($scope.board, $scope.store);
+      $scope.hand[0].highlight = 2 ;
+      $scope.store[storeNum].highlight = 1;
+      $scope.$apply();
+
+      updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
+
+    }
 
        $scope.doClick = function(item, event) {
          if (gameID=='') {
