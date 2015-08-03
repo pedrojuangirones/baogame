@@ -130,6 +130,7 @@ function   populateBoard(gameState) {
   board = gameState.board;
   beanBag = gameState.beanBag
   hand = gameState.hand;
+  store = gameState.store;
 
   /*
   Place beans in the board
@@ -171,7 +172,7 @@ function   populateBoard(gameState) {
               };
               break;
             case 'Congkak':
-              var numBeansInHouse = 7;
+              var numBeansInHouse = 18;
               var canvas = document.getElementById(board.field[k].row[i].house[j].canvasId);
               for (var l=0; l<numBeansInHouse; l++) {
                 var aBean=createBean();
@@ -223,15 +224,20 @@ function   populateBoard(gameState) {
         hand[i].beans.push(aBean);
       };
     }
+
+    for (var i=0; i<store.length; i++ ) {
+      var storeCanvas = document.getElementById(hand[i].canvasId);
+      store[i].beans=[];
+    }
 }
 
 function createBean(){
   var aBean={
              id:0,
-             color: 'green',
-             border: '#003300',
-             x: 0,
-             y: 0
+             color: setBeanColor(), //'green', //rgb2hex(100,100,0) ,
+             border: 'khaki',
+             x: -20,
+             y: -20
            }
    return aBean;
 }
@@ -249,9 +255,9 @@ function getGames(){
   var games = [
     'Bao la kujifunza',
     'Bao la kiswahili',
+    'Congkak',
     'Hawalis',
-    'Omweso',
-    'Congkak'
+    'Omweso'
   ]
 
   return games;

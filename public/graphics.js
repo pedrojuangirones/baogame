@@ -6,14 +6,58 @@ function placeBean(bean, beans, canvas) {
   switch (componentType) {
     case 'store':
     case 'house':
-    for (var i=0; i<(beans.length+1); i++) {
-      bean.x = (10 +15*(Math.floor(i/4)));
-      bean.y = (10 + 15*(i%4));
-      if (i<beans.length) {
-        if ( (bean.x !== beans[i].x) || (bean.y !== beans[i].y) ) {
-          continue
-        }
-      }
+    if (beans.length>0) {
+
+      var potRadius = Math.min(canvas.width, canvas.height)
+      var angle;
+      var radAngle;
+      var rX;      //unitary vecto in the direction of the new bean (X component)
+      var rY;      //unitary vector in the direction of the new bean (Y component)
+      var distanceFromCentre;
+      var distanceIncrement;
+      var overlap  = true;
+      var logicalBeanDiameter=10
+
+      distanceFromCentre=5;
+      distanceIncrement=1;
+//        alert('in loop')
+
+          do {
+              angle=Math.random()*360;
+
+              if ((angle==90)||((angle==270))) { //avoid infinite tagent
+                angle = angle +1
+              };
+               radAngle=(angle*(Math.PI/180));
+               rX=Math.cos(radAngle);
+               rY=Math.sin(radAngle);
+
+
+
+              var beanDistance;
+              for (var j=0; j<5; j++) {
+                bean.x=distanceFromCentre*rX;
+                bean.y=distanceFromCentre*rY;
+                overlap=false;
+                for (var i=0; i<beans.length; i++){
+                   beanDistance=Math.sqrt((square(beans[i].x-bean.x))
+                                              +  square(beans[i].y-bean.y));
+                    if (beanDistance <= logicalBeanDiameter) {
+                        overlap=true;
+                    }
+                }
+                if (overlap) {
+                  distanceFromCentre=Math.min((distanceFromCentre+distanceIncrement),
+                                        (potRadius-0.8*logicalBeanDiameter));
+                }
+              }
+
+
+          } while (overlap);
+
+    } else { //place the first bean
+      bean.x = (0.2*Math.random())*canvas.width;
+      bean.y = (0.2*Math.random())*canvas.height
     }
         break;
     case 'beanBag':
@@ -44,6 +88,31 @@ function placeBean(bean, beans, canvas) {
   return bean
 }
 
+function  square( d){
+    return d*d;
+}
+
+function setBeanColor(){
+    var rComponent,gComponent,bComponent;
+    var contrast=7;
+    rComponent=120+contrast*Math.floor(Math.random()*20);
+    gComponent=40+contrast*Math.floor(Math.random()*10);
+    bComponent=20+contrast*Math.floor(Math.random()*10);
+    return rgbToHex(rComponent,gComponent,bComponent);
+  }
+
+    function rgbToHex(r, g, b) {
+        return "#" + componentToHex(Math.min(r,255)) +
+                     componentToHex(Math.min(g,255)) +
+                     componentToHex(Math.min(b,255));
+    }
+
+    function componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+
+
 function drawBeans(beans, canvas){
   if (beans) {
     for (var i=0; i<beans.length; i++){
@@ -64,8 +133,8 @@ function drawBean(bean,canvas){
   switch (componentType) {
     case 'store':
     case 'house':
-        finalX=bean.x ; //+ canvas.width/2;
-        finalY=bean.y ; //+ canvas.height/2;
+        finalX=bean.x + canvas.width/2;
+        finalY=bean.y + canvas.height/2;
         break;
     case 'beanBag':
     case 'hand':
@@ -136,9 +205,11 @@ function paintComponent(component) {
     return
   }
 
+
   var canvas = document.getElementById(component.canvasId);
   clear(canvas)
   highlight(canvas, component.highlight)
+  drawBorder(canvas)
   if (component.beans.length) {
     //alert('beans found')
     drawBeans(component.beans,canvas)
@@ -146,7 +217,36 @@ function paintComponent(component) {
   }
 }
 
+function drawBorder(canvas){
+  var context = canvas.getContext('2d');
+
+  switch(getComponenType(canvas)) {
+    case 'store':
+    case 'house':
+    context.beginPath();
+    //context.rect(0, 0, canvas.width, canvas.height)
+    context.arc(canvas.width/2, canvas.height/2, canvas.width/2, 0, 2 * Math.PI, false);
+    context.lineWidth = 2;
+    context.strokeStyle = 'brown';
+    context.stroke();
+      break;
+    case 'hand':
+    context.beginPath();
+    context.rect(0, 0, canvas.width, canvas.height)
+    context.lineWidth = 2;
+    context.strokeStyle = 'black';
+    context.stroke();
+     break;
+    case 'beanBag':
+     break;
+    default:
+      alert('component not defined')
+  }
+
+}
+
 function highlight(canvas,hightlight) {
+  var context = canvas.getContext('2d');
   switch(hightlight) {
     case 0:
     default:
