@@ -1,23 +1,10 @@
 angular.module('baoApp.game',[
     'baoApp.graphics'
 ])
-function setupBoard(boardType, $scope){
-  var store = []
-  for (var i=0; i<2; i++) {
-    store[i] = {}
-    store[i].canvasId = ('store:' + i);
-    store[i].highlight = 0;
-    store[i].beans = []
-  }
-
-
-  var hand = []
-    for (var i=0; i<2; i++) {
-      hand[i] = {}
-      hand[i].canvasId = ('hand:' + i);
-      hand[i].highlight = 0;
-      hand[i].beans = []
-    }
+function setupBoard(boardType, $scope, gameName){
+  var numberOfHands=2;
+  var numberOfStores=0;
+  var numberOfBags=0;
 
   switch(boardType) {
     case 'Bao/Omweso':
@@ -26,8 +13,6 @@ function setupBoard(boardType, $scope){
       var numberOfHouses=8;
 
 // Both store camvas in the DOM are defined from the first element of the array
-      store[0].storeWidth=0;
-      store[0].storeHeight=0;
       break;
   case 'Hawalis':
     var numberOfFields =2;
@@ -35,26 +20,28 @@ function setupBoard(boardType, $scope){
     var numberOfHouses=7;
 
   // Both store camvas in the DOM are defined from the first element of the array
-    store[0].storeWidth=0;
-    store[0].storeHeight=0;
     break;
   case 'Congkak (x5)':
     var numberOfFields =2;
     var numberOfRows = 1;
     var numberOfHouses=5;
+    var numberOfStores=2;
 
 // Both store camvas in the DOM are defined from the first element of the array
-    store[0].storeWidth=150;
-    store[0].storeHeight=150;
     break;
   case 'Congkak (x7)':
     var numberOfFields =2;
     var numberOfRows = 1;
     var numberOfHouses=7;
-
+    var numberOfStores=2;
 // Both store camvas in the DOM are defined from the first element of the array
-    store[0].storeWidth=150;
-    store[0].storeHeight=150;
+    break;
+  case 'Tchuka Ruma':
+    var numberOfStores = 1;
+    var numberOfHands=1;
+    var numberOfFields =1;
+    var numberOfRows = 1;
+    var numberOfHouses=4;
     break;
   default:
       alert('This board is not yet implemented')
@@ -62,8 +49,32 @@ function setupBoard(boardType, $scope){
       break;
   }
 
+  var hand = []
+    for (var i=0; i<numberOfHands; i++) {
+      hand[i] = {}
+      hand[i].canvasId = ('hand:' + i);
+      hand[i].highlight = 0;
+      hand[i].beans = []
+    }
 
-  /*
+  var store = []
+  for (var i=0; i<numberOfStores; i++) {
+    store[i] = {}
+    store[i].canvasId = ('store:' + i);
+    store[i].highlight = 0;
+    store[i].beans = []
+  }
+
+
+  var beanBag = []
+  for (var i=0; i<numberOfBags; i++) {
+    beanBag[i] = {}
+    beanBag[i].canvasId = ('beanBag:' + i);
+    beanBag[i].highlight = 0;
+    beanBag[i].beans=[];
+  }
+
+/*
   Generate the board
 */
   var board =  generateBoard(
@@ -72,9 +83,6 @@ function setupBoard(boardType, $scope){
                                 numberOfHouses);
 
 
-  var beanBag = {}
-  beanBag.beans=[];
-  beanBag.canvasId = 'beanBag'
 
   $scope.$apply();
   //populateBoard(gameName,allTheBeans,board,beanBag, hand);
@@ -89,7 +97,7 @@ function setupBoard(boardType, $scope){
   }*/
 
 
-  var gameState = {boardType: boardType, hand: hand, board: board, store: store, beanBag: beanBag}; //, board: board, hand: hand, beanBag: beanBag, store: store}
+  var gameState = {boardType: boardType, gameName: gameName, hand: hand, board: board, store: store, beanBag: beanBag}; //, board: board, hand: hand, beanBag: beanBag, store: store}
   return gameState;
 }
 
@@ -145,6 +153,7 @@ function   populateBoard(gameState) {
             seeds in each house */
             case 'Hawalis':
             case 'Bao la kujifunza':
+            case 'Tchuka Ruma':
               var numBeansInHouse = 2;
               var canvas = document.getElementById(board.field[k].row[i].house[j].canvasId);
               for (var l=0; l<numBeansInHouse; l++) {
@@ -172,7 +181,7 @@ function   populateBoard(gameState) {
               };
               break;
             case 'Congkak':
-              var numBeansInHouse = 18;
+              var numBeansInHouse = 7;
               var canvas = document.getElementById(board.field[k].row[i].house[j].canvasId);
               for (var l=0; l<numBeansInHouse; l++) {
                 var aBean=createBean();
@@ -200,7 +209,6 @@ function   populateBoard(gameState) {
         }
       }
     }
-
     /*
     Place beans in the hands
     */
@@ -247,7 +255,8 @@ function getBoards() {
     'Bao/Omweso',
     'Hawalis',
     'Congkak (x5)',
-    'Congkak (x7)'
+    'Congkak (x7)',
+    'Tchuka Ruma'
   ]
   return boards;
 }
@@ -257,7 +266,9 @@ function getGames(){
     'Bao la kiswahili',
     'Congkak',
     'Hawalis',
-    'Omweso'
+    'Omweso',
+    'Tchuka Ruma'
+
   ]
 
   return games;
@@ -334,7 +345,7 @@ function clearHighlight(board, store){
         }
       }
     }
-  for (var i=0; i<2; i++) {
+  for (var i=0; i<store.length; i++) {
     store[i].highlight=0;
   }
     //return board;

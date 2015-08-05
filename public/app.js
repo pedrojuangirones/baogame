@@ -14,6 +14,8 @@ angular.module('baoApp',[
     // $scope.storeHeight = 0;
      $scope.beanBagWidth = 500; //value overwritten in html until timeout
      $scope.beanBagHeight = 35;
+     $scope.storeWidth = 100;
+     $scope.storeHeight = 100;
        $scope.mousePos ='';
        $scope.mouseDown = false ;
        $scope.startSelCoords = {x:0,y:0};
@@ -36,9 +38,9 @@ angular.module('baoApp',[
        $scope.inviteAccepted = '';
 
        $scope.boardTypes = getBoards();
-       $scope.boardType = 'Congkak (x5)';//'Bao/Omweso'
+       $scope.boardType = 'Bao/Omweso'
        $scope.gameNames = getGames();
-       $scope.gameName = 'Congkak';//'Bao la kujifunza'
+       $scope.gameName = 'Bao la kujifunza'
        var gameID = 'default';
        var activePlayer = true;
 
@@ -47,7 +49,8 @@ angular.module('baoApp',[
        */
 
            var gameState;
-           gameState=setupBoard($scope.boardType || 'Bao', $scope);
+           gameState=setupBoard($scope.boardType || 'Bao',
+                                $scope, $scope.gameName || 'Bao la kujifunza');
            $scope.hand = gameState.hand;
            $scope.board = gameState.board;
            $scope.beanBag = gameState.beanBag;
@@ -56,6 +59,9 @@ angular.module('baoApp',[
            //var bagCanvas = document.getElementById('beanBag');
            //drawBeans($scope.beanBag.beans,bagCanvas)
 
+          setTimeout(paintGame($scope.board, $scope.hand,
+                              $scope.beanBag, $scope.store),
+                              1000);
 
        /*
        Users functions
@@ -296,11 +302,14 @@ angular.module('baoApp',[
         return false;
       }
       $scope.boardType = $scope.boardTypes[document.gameForm.boardTypes.selectedIndex];;
-      gameState=setupBoard($scope.boardType || 'Bao', $scope);
+      gameState=setupBoard($scope.boardType || 'Bao',
+                           $scope, $scope.gameName || 'Bao la kujifunza');
       $scope.hand = gameState.hand;
       $scope.board = gameState.board;
       $scope.beanBag = gameState.beanBag;
       $scope.store = gameState.store;
+
+      //paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store)
       $scope.$apply();
 
     }
@@ -320,7 +329,6 @@ angular.module('baoApp',[
                    beanBag: $scope.beanBag
                  };
       populateBoard(gameState);
-
       paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store)
 
     }

@@ -22,38 +22,39 @@ function placeBean(bean, beans, canvas) {
       distanceIncrement=1;
 //        alert('in loop')
 
-          do {
-              angle=Math.random()*360;
+      angle=Math.random()*360;
+      do {
+        distanceFromCentre=distanceFromCentre+distanceIncrement;
+        var count = 0;
+        do {
+          overlap=false;
 
-              if ((angle==90)||((angle==270))) { //avoid infinite tagent
-                angle = angle +1
-              };
-               radAngle=(angle*(Math.PI/180));
-               rX=Math.cos(radAngle);
-               rY=Math.sin(radAngle);
+          angle= angle + 5*count;
+          if ((angle==90)||((angle==270))) { //avoid infinite tagent
+            angle = angle +1
+          };
+          radAngle=(angle*(Math.PI/180));
+          rX=Math.cos(radAngle);
+          rY=Math.sin(radAngle);
 
-
-
-              var beanDistance;
-              for (var j=0; j<5; j++) {
-                bean.x=distanceFromCentre*rX;
-                bean.y=distanceFromCentre*rY;
-                overlap=false;
-                for (var i=0; i<beans.length; i++){
-                   beanDistance=Math.sqrt((square(beans[i].x-bean.x))
-                                              +  square(beans[i].y-bean.y));
-                    if (beanDistance <= logicalBeanDiameter) {
-                        overlap=true;
-                    }
-                }
-                if (overlap) {
-                  distanceFromCentre=Math.min((distanceFromCentre+distanceIncrement),
-                                        (potRadius-0.8*logicalBeanDiameter));
-                }
+          var beanDistance;
+          bean.x=distanceFromCentre*rX;
+          bean.y=distanceFromCentre*rY;
+          for (var i=0; i<beans.length; i++){
+             beanDistance=Math.sqrt((square(beans[i].x-bean.x))
+                                        +  square(beans[i].y-bean.y));
+              if (beanDistance <= logicalBeanDiameter) {
+                  overlap=true;
               }
+          }
 
-
-          } while (overlap);
+          if (overlap == false) {
+            return bean
+          }
+          count = count + 1;
+        } while (count < 72)
+      } while (distanceFromCentre < (potRadius-logicalBeanDiameter))
+      alert('Didn\'t find a place')
 
     } else { //place the first bean
       bean.x = (0.2*Math.random())*canvas.width;
@@ -172,7 +173,11 @@ function drawCircle(canvas) {
 
 function paintGame(board, hand, beanBag, store){
 //alert('paint beanBag')
-  paintComponent(beanBag)
+  if (beanBag) {
+    for (var i=0; i<beanBag.length; i++) {
+      paintComponent(beanBag[i])
+    }
+  }
   if (store) {
     for (var i=0; i<store.length; i++) {
       paintComponent(store[i])
@@ -205,15 +210,17 @@ function paintComponent(component) {
     return
   }
 
-
   var canvas = document.getElementById(component.canvasId);
-  clear(canvas)
-  highlight(canvas, component.highlight)
-  drawBorder(canvas)
-  if (component.beans.length) {
-    //alert('beans found')
-    drawBeans(component.beans,canvas)
 
+  if (canvas) {
+    clear(canvas)
+    highlight(canvas, component.highlight)
+    drawBorder(canvas)
+    if (component.beans.length) {
+      //alert('beans found')
+      drawBeans(component.beans,canvas)
+
+    }
   }
 }
 
@@ -222,18 +229,19 @@ function drawBorder(canvas){
 
   switch(getComponenType(canvas)) {
     case 'store':
+    alert('draw store border')
     case 'house':
     context.beginPath();
     //context.rect(0, 0, canvas.width, canvas.height)
-    context.arc(canvas.width/2, canvas.height/2, canvas.width/2, 0, 2 * Math.PI, false);
-    context.lineWidth = 2;
+    context.arc(canvas.width/2, canvas.height/2, (canvas.width/2-4), 0, 2 * Math.PI, false);
+    context.lineWidth = 3;
     context.strokeStyle = 'brown';
     context.stroke();
       break;
     case 'hand':
     context.beginPath();
-    context.rect(0, 0, canvas.width, canvas.height)
-    context.lineWidth = 2;
+    context.rect(0, 0, canvas.width-4, canvas.height-4)
+    context.lineWidth = 3;
     context.strokeStyle = 'black';
     context.stroke();
      break;
