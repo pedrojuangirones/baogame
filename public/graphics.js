@@ -229,7 +229,6 @@ function drawBorder(canvas){
 
   switch(getComponenType(canvas)) {
     case 'store':
-    alert('draw store border')
     case 'house':
     context.beginPath();
     //context.rect(0, 0, canvas.width, canvas.height)

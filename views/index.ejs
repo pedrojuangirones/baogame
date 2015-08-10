@@ -20,10 +20,16 @@
                   <label class="floatLeft">User:</label>
                           <input type="text" ng-model="loginUser"  class="floatRight"/> <br>
                   <label class="floatLeft">Password:</label>
-                  <input type="password" ng-model="loginPassword" value="" class="floatRight"/><br><br>
+                  <input type="password" ng-model="loginPassword" value="" class="floatRight"/><br>
+                  <div ng-show='newUser'>
+                    <label class="floatLeft" >Verify Password:</label>
+                    <input type="password" ng-model="verifyPassword"
+                                           value="" class="floatRight"/><br>
+                  </div>
                   <input type='button' value='Log in' ng-click ='logIn()'/>
                   <input type='button' value='Log out' ng-click ='logOut()'/>
-                  <input type='button' value='Register' ng-click='register()' />
+                  <input type='button' value='New User' ng-if='!newUser' ng-click='doNewUser()' />
+                  <input type='button' value='Register' ng-if='newUser' ng-click='register()' />
                   <input type='reset'  value='Reset' />
             </form>
                 </TD>
@@ -57,7 +63,8 @@
     </p>
   </TD>
   <TD WIDTH=60%>
-    <table class="doNoSelect" align="center" id="board"  border="black">
+    <table class="doNoSelect" align="center" id="board"
+            border="black" bgcolor="sandybrown">
       <tr><td colspan = "5" align="center">
          <!-- width="{{beanBagWidth}}" height="{{beanBagHeight}}" -->
 
@@ -74,10 +81,11 @@
         <canvas ng-if="hand.length>1"
                 id="{{hand[1].canvasId}}"
                 width="{{handWidth}}"
-                height="{{handHeight}}" ></canvas>
+                height="{{handHeight}}"
+                ng-click="changePlayer()"></canvas>
         </td >
         <td >
-          <canvas id="store[1].canvasId" ng-if="store.length>1"
+          <canvas id="{{store[1].canvasId}}" ng-if="store.length>1"
                               width="{{storeWidth}}"
                               height="{{storeHeight}}"
                               ng-click="doStoreClick($event)"></canvas>
@@ -94,7 +102,7 @@
           </table>
         </td>
         <td>
-          <canvas id="store[0].canvasId"  ng-if="store.length>0"
+          <canvas id="{{store[0].canvasId}}"  ng-if="store.length>0"
                               width="{{storeWidth}}"
                               height="{{storeHeight}}"
                               ng-click="doStoreClick($event)"></canvas>

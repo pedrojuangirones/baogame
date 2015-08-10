@@ -23,9 +23,11 @@ angular.module('baoApp',[
        $scope.pageTitle ='Bao Game';
        $scope.log ='';
        $scope.connected = false;
+       $scope.newUser = false;
        $scope.user = 'guest';
        $scope.loginUser = '';
        $scope.loginPassword = '';
+       $scope.verifyPassword = '';
 
        $scope.serverlog ='';
        $scope.onUsers = [];
@@ -38,9 +40,9 @@ angular.module('baoApp',[
        $scope.inviteAccepted = '';
 
        $scope.boardTypes = getBoards();
-       $scope.boardType = 'Bao/Omweso'
+       $scope.boardType = 'Congkak (x5)';//'Bao/Omweso'
        $scope.gameNames = getGames();
-       $scope.gameName = 'Bao la kujifunza'
+       $scope.gameName = 'Congkak';//'Bao la kujifunza'
        var gameID = 'default';
        var activePlayer = true;
 
@@ -59,13 +61,16 @@ angular.module('baoApp',[
            //var bagCanvas = document.getElementById('beanBag');
            //drawBeans($scope.beanBag.beans,bagCanvas)
 
-          setTimeout(paintGame($scope.board, $scope.hand,
+          /*setTimeout(paintGame($scope.board, $scope.hand,
                               $scope.beanBag, $scope.store),
-                              1000);
+                              1000);*/
 
        /*
        Users functions
        */
+       $scope.doNewUser = function(){
+         $scope.newUser = true;
+       }
        $scope.register = function (){
           // $scope.pageTitle  = 'Sign In' ;
           if ($scope.loginUser=='' ) {
@@ -73,9 +78,16 @@ angular.module('baoApp',[
           } else if ( $scope.loginPassword=='')  {
             alert('Password too short')
           } else {
-           socket.emit('signup', {user: $scope.loginUser, password : $scope.loginPassword})
-           $scope.loginUser = '';
-           $scope.loginPassword = '';
+            alert($scope.loginPassword + ' ?= ' + $scope.verifyPassword)
+            if ($scope.loginPassword == $scope.verifyPassword) {
+              socket.emit('signup', {user: $scope.loginUser, password : $scope.loginPassword})
+              $scope.loginUser = '';
+              $scope.loginPassword = '';
+              $scope.verifyPassword = '';
+              $scope.newUser = false;
+            } else {
+              alert('Password verification failed')
+            }
          }
 
        }
@@ -494,8 +506,6 @@ angular.module('baoApp',[
 
       var canvas = event.target;
       var storeNum = event.target.id.split(':')[1];
-
- //alert('store ' + storeNum)
 
       if ($scope.hand[0].beans.length > 0 ) {
         var aBean = $scope.hand[0].beans.pop();
