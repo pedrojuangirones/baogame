@@ -1,7 +1,8 @@
 
 angular.module('baoApp',[
   'baoApp.graphics' ,
-  'baoApp.game'
+  'baoApp.game',
+  'baoApp.color'
 ])
 
    .controller('AppController', function ($scope) {
@@ -43,6 +44,8 @@ angular.module('baoApp',[
        $scope.boardType = 'Congkak (x5)';//'Bao/Omweso'
        $scope.gameNames = getGames();
        $scope.gameName = 'Congkak';//'Bao la kujifunza'
+       $scope.gameColor = setColor($scope.gameName)
+
        var gameID = 'default';
        var activePlayer = true;
 
@@ -333,6 +336,7 @@ angular.module('baoApp',[
       }
       $scope.gameName = $scope.gameNames[document.gameForm.gameNames.selectedIndex];
 
+      $scope.gameColor = setColor($scope.gameName)
       gameState = {boardType: $scope.boardType,
                    gameName: $scope.gameName,
                    hand: $scope.hand,

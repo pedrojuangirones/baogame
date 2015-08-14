@@ -93,15 +93,6 @@ function  square( d){
     return d*d;
 }
 
-function setBeanColor(){
-    var rComponent,gComponent,bComponent;
-    var contrast=7;
-    rComponent=120+contrast*Math.floor(Math.random()*20);
-    gComponent=40+contrast*Math.floor(Math.random()*10);
-    bComponent=20+contrast*Math.floor(Math.random()*10);
-    return rgbToHex(rComponent,gComponent,bComponent);
-  }
-
     function rgbToHex(r, g, b) {
         return "#" + componentToHex(Math.min(r,255)) +
                      componentToHex(Math.min(g,255)) +

@@ -1,5 +1,6 @@
 angular.module('baoApp.game',[
-    'baoApp.graphics'
+    'baoApp.graphics',
+    'baoApp.color'
 ])
 function setupBoard(boardType, $scope, gameName){
   var numberOfHands=2;
@@ -157,7 +158,7 @@ function   populateBoard(gameState) {
               var numBeansInHouse = 2;
               var canvas = document.getElementById(board.field[k].row[i].house[j].canvasId);
               for (var l=0; l<numBeansInHouse; l++) {
-                var aBean=createBean();
+                var aBean=createBean(gameName);
                 aBean = placeBean(aBean, board.field[k].row[i].house[j].beans, canvas);
                 board.field[k].row[i].house[j].beans.push(aBean);
               };
@@ -175,7 +176,7 @@ function   populateBoard(gameState) {
               }
 
               for (var l=0; l<numBeansInHouse; l++) {
-                var aBean=createBean();
+                var aBean=createBean(gameName);
                 aBean = placeBean(aBean, board.field[k].row[i].house[j].beans, houseCanvas);
                 board.field[k].row[i].house[j].beans.push(aBean);
               };
@@ -184,7 +185,7 @@ function   populateBoard(gameState) {
               var numBeansInHouse = 7;
               var canvas = document.getElementById(board.field[k].row[i].house[j].canvasId);
               for (var l=0; l<numBeansInHouse; l++) {
-                var aBean=createBean();
+                var aBean=createBean(gameName);
                 aBean = placeBean(aBean, board.field[k].row[i].house[j].beans, canvas);
                 board.field[k].row[i].house[j].beans.push(aBean);
               };
@@ -194,7 +195,7 @@ function   populateBoard(gameState) {
               var canvas = document.getElementById(board.field[k].row[i].house[j].canvasId);
               if (((k==0) && (i==0)) || ((k==1)&&(i==1))) {
                 for (var l=0; l<numBeansInHouse; l++) {
-                  var aBean=createBean();
+                  var aBean=createBean(gameName);
                   aBean = placeBean(aBean, board.field[k].row[i].house[j].beans, canvas);
                   board.field[k].row[i].house[j].beans.push(aBean);
                 };
@@ -227,7 +228,7 @@ function   populateBoard(gameState) {
       hand[i].beans=[];
 
       for (var l=0; l<numBeansInHand; l++) {
-        var aBean=createBean();
+        var aBean=createBean(gameName);
         aBean = placeBean(aBean, hand[i].beans, handCanvas);
         hand[i].beans.push(aBean);
       };
@@ -239,10 +240,11 @@ function   populateBoard(gameState) {
     }
 }
 
-function createBean(){
+function createBean(gameName){
+  var gameColor = setColor(gameName)
   var aBean={
              id:0,
-             color: setBeanColor(), //'green', //rgb2hex(100,100,0) ,
+             color: setBeanColor(gameColor),
              border: 'khaki',
              x: -20,
              y: -20

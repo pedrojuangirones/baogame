@@ -26,7 +26,7 @@ body {
   //width: 1000px;
   margin: 0 auto;
   //background-color: #FF9500;
-  padding: 20px 20px 20px 20px;
+  //padding: 20px 20px 20px 20px;
   //border: 5px solid black;
 }
 
@@ -52,12 +52,13 @@ li {
   color: green;
 }
 
+/*
 #inviteInID {
   color: grey;
-}
+} */
 
 .toplinks {
-  padding: 30px 50px;
+  //padding: 30px 50px;
   text-align: left;
   font-size: 30px;
   //line-height: 10;
@@ -104,3 +105,12 @@ form {
 
 canvas {
   border:2px solid red;border-radius:8px}
+
+table, th, td {
+      border: 1px solid black;
+      border-collapse: collapse;
+  }
+
+  th, td {
+      padding: 0px;
+  }
