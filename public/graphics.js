@@ -237,35 +237,37 @@ function paintComponent(component,gameColor) {
 }
 
 function drawHand(context,handId,gameColor) {
-  switch (handId) {
-    case '0':
-      var fingerWitdth = 15;
-      var leftPadding = 5;
-      var fingerBase = [120, 87, 80, 85, 110]
-      var fingerHeight = [50,40,40,35]
-      var thumAngleA = 0.75*Math.PI;
-      var thumAngleB = -0.20*Math.PI;
-      var thumWidth = 20;
-      var thumLengthA = 15;
-      var thumLengthB = 40;
-      var palmBezierPointY = 180;
-      break;
-    case '1':
-      var fingerWitdth = -15;
-      var leftPadding = 95;
-      var fingerBase = [200-120, 200-87, 200-80, 200-85, 200-110]
-      var fingerHeight = [-50,-40,-40,-35]
-      var thumAngleA = 0.75*Math.PI;
-      var thumAngleB = -0.20*Math.PI;
-      var thumWidth = -20;
-      var thumLengthA = -15;
-      var thumLengthB = -40;
-      var palmBezierPointY = 20;
-      break;
-    default:
-     alert('Wrong hand Id' + handId )
-     return;
-  }
+  var canvasWidth = 100;
+  var canvasHeight = 200;
+
+  var fingerWidth = 15;
+  var leftPadding = 5;
+  var fingerBase = [120, 87, 80, 85, 110]
+  var fingerHeight = [50,40,40,35]
+  var thumAngleA = 0.75*Math.PI;
+  var thumAngleB = -0.20*Math.PI;
+  var thumWidth = 20;
+  var thumLengthA = 15;
+  var thumLengthB = 40;
+  var palmBezierPointY = 180;
+
+if   (handId== 1) {
+ fingerWidth = -fingerWidth;
+ leftPadding = canvasWidth-leftPadding;
+ for (var i = 0; i < fingerBase.length; i++) {
+   fingerBase[i] = canvasHeight - fingerBase[i];
+ }
+ for (var i = 0; i < fingerHeight.length; i++) {
+   fingerHeight[i] = - fingerHeight[i];
+ }
+ thumAngleA = 0.75*Math.PI;
+ thumAngleB = -0.20*Math.PI;
+ thumWidth = -thumWidth;
+ thumLengthA = -thumLengthA;
+ thumLengthB = -thumLengthB;
+ palmBezierPointY = canvasHeight-palmBezierPointY;
+
+}
 
   context.beginPath();
 
@@ -275,18 +277,18 @@ function drawHand(context,handId,gameColor) {
   draw fingers
   */
   for (var i=0; i<4; i++) {
-    context.lineTo(leftPadding+i*fingerWitdth, fingerBase[i]-fingerHeight[i]);
-    context.bezierCurveTo(leftPadding+i*fingerWitdth, fingerBase[i]-fingerHeight[i]-fingerWitdth,
-                          leftPadding+(i+1)*fingerWitdth, fingerBase[i]-fingerHeight[i]-fingerWitdth,
-                          leftPadding+(i+1)*fingerWitdth, fingerBase[i]-fingerHeight[i]);
-    context.lineTo(leftPadding+(i+1)*fingerWitdth, fingerBase[i+1])
+    context.lineTo(leftPadding+i*fingerWidth, fingerBase[i]-fingerHeight[i]);
+    context.bezierCurveTo(leftPadding+i*fingerWidth, fingerBase[i]-fingerHeight[i]-fingerWidth,
+                          leftPadding+(i+1)*fingerWidth, fingerBase[i]-fingerHeight[i]-fingerWidth,
+                          leftPadding+(i+1)*fingerWidth, fingerBase[i]-fingerHeight[i]);
+    context.lineTo(leftPadding+(i+1)*fingerWidth, fingerBase[i+1])
 
   }
   /*
   draw thum
 */
 
-  var thumPointA = {x: leftPadding+4*fingerWitdth+getVector(thumAngleA,thumLengthA).x ,
+  var thumPointA = {x: leftPadding+4*fingerWidth+getVector(thumAngleA,thumLengthA).x ,
                     y: fingerBase[4]+ getVector(thumAngleA,thumLengthA).y
                     }
   context.lineTo(thumPointA.x,thumPointA.y );
@@ -334,18 +336,18 @@ function drawRightHand(context,handId,gameColor) {
   draw fingers
   */
   for (var i=0; i<4; i++) {
-    context.lineTo(leftPadding+i*fingerWitdth, fingerBase[i]-fingerHeight[i]);
-    context.bezierCurveTo(leftPadding+i*fingerWitdth, fingerBase[i]-fingerHeight[i]-fingerWitdth,
-                          leftPadding+(i+1)*fingerWitdth, fingerBase[i]-fingerHeight[i]-fingerWitdth,
-                          leftPadding+(i+1)*fingerWitdth, fingerBase[i]-fingerHeight[i]);
-    context.lineTo(leftPadding+(i+1)*fingerWitdth, fingerBase[i+1])
+    context.lineTo(leftPadding+i*fingerWidth, fingerBase[i]-fingerHeight[i]);
+    context.bezierCurveTo(leftPadding+i*fingerWidth, fingerBase[i]-fingerHeight[i]-fingerWidth,
+                          leftPadding+(i+1)*fingerWidth, fingerBase[i]-fingerHeight[i]-fingerWidth,
+                          leftPadding+(i+1)*fingerWidth, fingerBase[i]-fingerHeight[i]);
+    context.lineTo(leftPadding+(i+1)*fingerWidth, fingerBase[i+1])
 
   }
   /*
   draw thum
 */
 
-  var thumPointA = {x: leftPadding+4*fingerWitdth+getVector(thumAngleA,thumLengthA).x ,
+  var thumPointA = {x: leftPadding+4*fingerWidth+getVector(thumAngleA,thumLengthA).x ,
                     y: fingerBase[4]+ getVector(thumAngleA,thumLengthA).y
                     }
   context.lineTo(thumPointA.x,thumPointA.y );
