@@ -80,8 +80,9 @@
         <td>
         <canvas ng-if="hand.length>1"
                 id="{{hand[1].canvasId}}"
-                width="{{handWidth}}"
-                height="{{handHeight}}"
+                witdh=100
+                height=200
+                <!-- width="{{handWidth}}"  height="{{handHeight}}" -->
                 ng-click="changePlayer()"></canvas>
         </td >
         <td >
@@ -91,15 +92,18 @@
                               ng-click="doStoreClick($event)"></canvas>
         </td>
         <td><div align="center">
-          <table border="black" ng-repeat="f in board.field">
+          <table border="black" ng-repeat="f in board.field" ng-init="thisid=f.id">
             <tr ng-repeat="r in f.row">
               <td ng-repeat="h in r.house">
                 <canvas  id="{{h.canvasId}}" width="{{houseWidth}}" height="{{houseHeight}}"
                          ng-click="doHouseClick($event)"
                          ng-dblclick="doHouseDblClick($event)"></canvas>
-              </td></div>
+              </td>
+
             </tr>
           </table>
+          </div>
+
         </td>
         <td>
           <canvas id="{{store[0].canvasId}}"  ng-if="store.length>0"

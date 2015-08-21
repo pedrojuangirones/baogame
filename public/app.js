@@ -9,8 +9,8 @@ angular.module('baoApp',[
      var socket = io.connect();
      $scope.houseWidth=75;
      $scope.houseHeight=75;
-     $scope.handWidth= 50;
-     $scope.handHeight = 400;
+     $scope.handWidth= 100;
+     $scope.handHeight = 200;
     // $scope.storeWidth = 0;
     // $scope.storeHeight = 0;
      $scope.beanBagWidth = 500; //value overwritten in html until timeout
@@ -63,6 +63,7 @@ angular.module('baoApp',[
            $scope.$apply();
            //var bagCanvas = document.getElementById('beanBag');
            //drawBeans($scope.beanBag.beans,bagCanvas)
+
 
           /*setTimeout(paintGame($scope.board, $scope.hand,
                               $scope.beanBag, $scope.store),
@@ -345,7 +346,7 @@ angular.module('baoApp',[
                    beanBag: $scope.beanBag
                  };
       populateBoard(gameState);
-      paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store)
+      paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store, $scope.gameColor)
 
     }
     $scope.changePlayer = function(){
@@ -595,7 +596,7 @@ angular.module('baoApp',[
 
          $scope.$apply();
 
-         paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
+         paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store, $scope.gameColor)
          $scope.$apply();
 
        })

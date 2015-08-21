@@ -104,7 +104,9 @@ form {
 
 
 canvas {
-  border:2px solid red;border-radius:8px}
+  //border:2px solid red;border-radius:8px;
+  display:block
+}
 
 table, th, td {
       border: 1px solid black;
@@ -112,5 +114,5 @@ table, th, td {
   }
 
   th, td {
-      padding: 0px;
+      padding: 3px;
   }

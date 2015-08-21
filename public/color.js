@@ -3,17 +3,36 @@ angular.module('baoApp.color',[])
 function setColor(gameName) {
   var gameColor = {}
 
-
+  gameColor.handBorder = 'grey';
+  gameColor.handFilling = 'yellow'
   switch (gameName) {
+    /*
+    Bean colors are defined from a "cental" RGB value
+    and a random shift in each color component.
+    The shift value oscillates between null and
+    the beanComponentShift value.
+    The random value is multiplied by the _contrast variable
+    */
+
+    case 'Omweso':
+    gameColor.board = 'white';
+    gameColor.beanRed = 120;
+    gameColor.beanRedShift = 20;
+    gameColor.beanGreen = 30;
+    gameColor.beanGreenShift = 10;
+    gameColor.beanBlue = 10;
+    gameColor.beanBlueShift = 10;
+    gameColor.contrast = 20
+
+    gameColor.beanBorder = 'red'
+        break;
+    case 'Bao la kujifunza':
+    case 'Bao la kiswahili':
+    case 'Congkak':
+    case 'Hawalis':
+    case 'Tchuka Ruma':
     default:
       gameColor.board = 'sandybrown';
-      /*
-      Bean colors are defined from a "cental" RGB value
-      and a random shift in each color component.
-      The shift value oscillates between null and
-      the beanComponentShift value.
-      The random value is multiplied by the _contrast variable
-      */
       gameColor.beanRed = 20;
       gameColor.beanRedShift = 20;
       gameColor.beanGreen = 40;

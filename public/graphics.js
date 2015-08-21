@@ -162,23 +162,23 @@ function drawCircle(canvas) {
     return true;
 }
 
-function paintGame(board, hand, beanBag, store){
+function paintGame(board, hand, beanBag, store, gameColor){
 //alert('paint beanBag')
   if (beanBag) {
     for (var i=0; i<beanBag.length; i++) {
-      paintComponent(beanBag[i])
+      paintComponent(beanBag[i],gameColor)
     }
   }
   if (store) {
     for (var i=0; i<store.length; i++) {
-      paintComponent(store[i])
+      paintComponent(store[i],gameColor)
     }
   }
 //  alert('paintHands' + hand[0].highlight + ',' + hand[1].highlight)
 
   //alert('paintHands' +hand.length)
   for (var i=0; i<hand.length; i++) {
-    paintComponent(hand[i])
+    paintComponent(hand[i],gameColor)
   }
 //alert('paintHouses')
   for (var k=0; k<board.field.length; k++) {
@@ -187,7 +187,7 @@ function paintGame(board, hand, beanBag, store){
       //alert('row ' + board.field[k].row[i].id)
       for (var j=0; j<board.field[k].row[i].house.length; j++) {
         //alert('house' + board.field[k].row[i].house[j].id)
-        paintComponent(board.field[k].row[i].house[j])
+        paintComponent(board.field[k].row[i].house[j],gameColor)
       }
 
     }
@@ -195,7 +195,7 @@ function paintGame(board, hand, beanBag, store){
 
 }
 
-function paintComponent(component) {
+function paintComponent(component,gameColor) {
   if (!component.canvasId) {
     alert('canvasId not defined')
     return
@@ -206,7 +206,28 @@ function paintComponent(component) {
   if (canvas) {
     clear(canvas)
     highlight(canvas, component.highlight)
-    drawBorder(canvas)
+    var context = canvas.getContext('2d');
+
+    switch(getComponenType(canvas)) {
+      case 'store':
+      case 'house':
+      context.beginPath();
+      //context.rect(0, 0, canvas.width, canvas.height)
+      context.arc(canvas.width/2, canvas.height/2, (canvas.width/2-4), 0, 2 * Math.PI, false);
+      context.lineWidth = 3;
+      context.strokeStyle = 'brown';
+      context.stroke();
+        break;
+      case 'hand':
+
+       drawHand(context,getComponenId(canvas),gameColor)
+       break;
+      case 'beanBag':
+       break;
+      default:
+        alert('component not defined')
+    }
+
     if (component.beans.length) {
       //alert('beans found')
       drawBeans(component.beans,canvas)
@@ -215,32 +236,156 @@ function paintComponent(component) {
   }
 }
 
-function drawBorder(canvas){
-  var context = canvas.getContext('2d');
-
-  switch(getComponenType(canvas)) {
-    case 'store':
-    case 'house':
-    context.beginPath();
-    //context.rect(0, 0, canvas.width, canvas.height)
-    context.arc(canvas.width/2, canvas.height/2, (canvas.width/2-4), 0, 2 * Math.PI, false);
-    context.lineWidth = 3;
-    context.strokeStyle = 'brown';
-    context.stroke();
+function drawHand(context,handId,gameColor) {
+  switch (handId) {
+    case '0':
+      var fingerWitdth = 15;
+      var leftPadding = 5;
+      var fingerBase = [120, 87, 80, 85, 110]
+      var fingerHeight = [50,40,40,35]
+      var thumAngleA = 0.75*Math.PI;
+      var thumAngleB = -0.20*Math.PI;
+      var thumWidth = 20;
+      var thumLengthA = 15;
+      var thumLengthB = 40;
+      var palmBezierPointY = 180;
       break;
-    case 'hand':
-    context.beginPath();
-    context.rect(0, 0, canvas.width-4, canvas.height-4)
-    context.lineWidth = 3;
-    context.strokeStyle = 'black';
-    context.stroke();
-     break;
-    case 'beanBag':
-     break;
+    case '1':
+      var fingerWitdth = -15;
+      var leftPadding = 95;
+      var fingerBase = [200-120, 200-87, 200-80, 200-85, 200-110]
+      var fingerHeight = [-50,-40,-40,-35]
+      var thumAngleA = 0.75*Math.PI;
+      var thumAngleB = -0.20*Math.PI;
+      var thumWidth = -20;
+      var thumLengthA = -15;
+      var thumLengthB = -40;
+      var palmBezierPointY = 20;
+      break;
     default:
-      alert('component not defined')
+     alert('Wrong hand Id' + handId )
+     return;
   }
 
+  context.beginPath();
+
+  context.lineWidth = 3;
+  context.moveTo(leftPadding, fingerBase[0]);
+  /*
+  draw fingers
+  */
+  for (var i=0; i<4; i++) {
+    context.lineTo(leftPadding+i*fingerWitdth, fingerBase[i]-fingerHeight[i]);
+    context.bezierCurveTo(leftPadding+i*fingerWitdth, fingerBase[i]-fingerHeight[i]-fingerWitdth,
+                          leftPadding+(i+1)*fingerWitdth, fingerBase[i]-fingerHeight[i]-fingerWitdth,
+                          leftPadding+(i+1)*fingerWitdth, fingerBase[i]-fingerHeight[i]);
+    context.lineTo(leftPadding+(i+1)*fingerWitdth, fingerBase[i+1])
+
+  }
+  /*
+  draw thum
+*/
+
+  var thumPointA = {x: leftPadding+4*fingerWitdth+getVector(thumAngleA,thumLengthA).x ,
+                    y: fingerBase[4]+ getVector(thumAngleA,thumLengthA).y
+                    }
+  context.lineTo(thumPointA.x,thumPointA.y );
+  var thumPointB = {x: thumPointA.x + getVector(thumAngleA-Math.PI/2,thumWidth).x,
+             y: thumPointA.y + getVector(thumAngleA-Math.PI/2,thumWidth).y
+            }
+  /*
+  Draw thum tip
+  */
+  context.bezierCurveTo(thumPointA.x + getVector(thumAngleA,thumWidth).x ,
+                        thumPointA.y + getVector(thumAngleA,thumWidth).y,
+                        thumPointB.x + getVector(thumAngleB,-thumWidth).x,
+                        thumPointB.y + getVector(thumAngleB,-thumWidth).y,
+                        thumPointB.x,thumPointB.y );
+  context.lineTo(thumPointB.x + getVector(thumAngleB,thumLengthB).x,
+                thumPointB.y + getVector(thumAngleB,thumLengthB).y);
+
+  /*
+  draw bottom of hand*/
+  context.bezierCurveTo(thumPointB.x + getVector(thumAngleB,1.55*thumLengthB).x,
+                        thumPointB.y + getVector(thumAngleB,1.55*thumLengthB).y,
+                        leftPadding,
+                        palmBezierPointY,
+                        leftPadding,
+                        fingerBase[0]
+                        )
+
+  /*
+  fill hand
+  */
+  context.fillStyle = gameColor.handFilling;
+  context.fill();
+
+  context.strokeStyle = gameColor.handBorder ;
+
+  context.stroke();
+}
+function drawRightHand(context,handId,gameColor) {
+
+  context.beginPath();
+
+  context.lineWidth = 3;
+  context.moveTo(leftPadding, fingerBase[0]);
+  /*
+  draw fingers
+  */
+  for (var i=0; i<4; i++) {
+    context.lineTo(leftPadding+i*fingerWitdth, fingerBase[i]-fingerHeight[i]);
+    context.bezierCurveTo(leftPadding+i*fingerWitdth, fingerBase[i]-fingerHeight[i]-fingerWitdth,
+                          leftPadding+(i+1)*fingerWitdth, fingerBase[i]-fingerHeight[i]-fingerWitdth,
+                          leftPadding+(i+1)*fingerWitdth, fingerBase[i]-fingerHeight[i]);
+    context.lineTo(leftPadding+(i+1)*fingerWitdth, fingerBase[i+1])
+
+  }
+  /*
+  draw thum
+*/
+
+  var thumPointA = {x: leftPadding+4*fingerWitdth+getVector(thumAngleA,thumLengthA).x ,
+                    y: fingerBase[4]+ getVector(thumAngleA,thumLengthA).y
+                    }
+  context.lineTo(thumPointA.x,thumPointA.y );
+  var thumPointB = {x: thumPointA.x + getVector(thumAngleA-Math.PI/2,thumWidth).x,
+             y: thumPointA.y + getVector(thumAngleA-Math.PI/2,thumWidth).y
+            }
+  /*
+  Draw thum tip
+  */
+  context.bezierCurveTo(thumPointA.x + getVector(thumAngleA,thumWidth).x ,
+                        thumPointA.y + getVector(thumAngleA,thumWidth).y,
+                        thumPointB.x + getVector(thumAngleB,-thumWidth).x,
+                        thumPointB.y + getVector(thumAngleB,-thumWidth).y,
+                        thumPointB.x,thumPointB.y );
+  context.lineTo(thumPointB.x + getVector(thumAngleB,thumLengthB).x,
+                thumPointB.y + getVector(thumAngleB,thumLengthB).y);
+
+  /*
+  draw bottom of hand*/
+  context.bezierCurveTo(thumPointB.x + getVector(thumAngleB,1.55*thumLengthB).x,
+                        thumPointB.y + getVector(thumAngleB,1.55*thumLengthB).y,
+                        leftPadding,
+                        180,
+                        leftPadding,
+                        fingerBase[0]
+                        )
+
+  /*
+  fill hand
+  */
+  context.fillStyle = gameColor.handFilling;
+  context.fill();
+
+  context.strokeStyle = gameColor.handBorder ;
+
+  context.stroke();
+}
+
+function getVector(alpha,length) {
+  return {x:length * Math.sin(alpha) , y: length*Math.cos(alpha)}
 }
 
 function highlight(canvas,hightlight) {
@@ -280,4 +425,8 @@ function clear(canvas) {
 
 function getComponenType(canvas) {
   return canvas.id.split(':')[0]
+}
+
+function getComponenId(canvas) {
+  return canvas.id.split(':')[1]
 }
