@@ -283,7 +283,7 @@ angular.module('baoApp',[
            activePlayer = false;
            $scope.$apply()
            //populateBoard(game,$scope.board,$scope.beanBag)
-           updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
+           updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store, $scope.gameColor,socket)
 
        })
 
@@ -343,7 +343,8 @@ angular.module('baoApp',[
                    hand: $scope.hand,
                    board: $scope.board,
                    store: $scope.store,
-                   beanBag: $scope.beanBag
+                   beanBag: $scope.beanBag,
+                   gameColor: $scope.gameColor
                  };
       populateBoard(gameState);
       paintGame($scope.board, $scope.hand, $scope.beanBag, $scope.store, $scope.gameColor)
@@ -368,7 +369,7 @@ angular.module('baoApp',[
       $scope.$apply();
 
       socket.emit('changeplayer',gameID);
-      updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
+      updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store, $scope.gameColor,socket)
 
     }
 
@@ -426,7 +427,7 @@ angular.module('baoApp',[
       clear(canvas)
       //drawBeans($scope.hand[0].beans,canvas)
 
-      updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
+      updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store, $scope.gameColor,socket)
 
       $scope.mouseDown =false;
     }
@@ -451,6 +452,7 @@ angular.module('baoApp',[
       var numBeans=$scope.board.field[fieldNum].row[rowNum].house[houseNum].beans.length;
 
       for (var i=0; i<numBeans; i++) {
+
         var aBean;
         aBean = $scope.board.field[fieldNum].row[rowNum].house[houseNum].beans.pop();
         aBean = placeBean(aBean, $scope.hand[0].beans, canvas);
@@ -460,7 +462,9 @@ angular.module('baoApp',[
       $scope.hand[0].highlight = 1 ;
       $scope.board.field[fieldNum].row[rowNum].house[houseNum].highlight = 2;
       $scope.$apply();
-      updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
+
+      updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store, $scope.gameColor,socket)
+
     }
 
     $scope.doHouseClick = function(event){
@@ -494,7 +498,7 @@ angular.module('baoApp',[
       $scope.board.field[fieldNum].row[rowNum].house[houseNum].highlight = 1;
       $scope.$apply();
 
-      updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
+      updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store, $scope.gameColor,socket)
 
     }
 
@@ -525,7 +529,7 @@ angular.module('baoApp',[
       $scope.store[storeNum].highlight = 1;
       $scope.$apply();
 
-      updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store,socket)
+      updateGame(gameID, $scope.board, $scope.hand, $scope.beanBag, $scope.store, $scope.gameColor,socket)
 
     }
 
@@ -593,6 +597,7 @@ angular.module('baoApp',[
          }
 
          $scope.store = gameState.store;
+         $scope.gameColor = gameState.gameColor;
 
          $scope.$apply();
 

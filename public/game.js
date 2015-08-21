@@ -98,7 +98,12 @@ function setupBoard(boardType, $scope, gameName){
   }*/
 
 
-  var gameState = {boardType: boardType, gameName: gameName, hand: hand, board: board, store: store, beanBag: beanBag}; //, board: board, hand: hand, beanBag: beanBag, store: store}
+  var gameState = {boardType: boardType,
+                   gameName: gameName,
+                   hand: hand,
+                   board: board,
+                   store: store,
+                   beanBag: beanBag}; //, board: board, hand: hand, beanBag: beanBag, store: store}
   return gameState;
 }
 
@@ -353,8 +358,13 @@ function clearHighlight(board, store){
     //return board;
 }
 
-function updateGame(gameID, board, hand, beanBag, store, socket) {
-  paintGame(board, hand, beanBag, store)
-  gameState = {gameID: gameID, board: board, hand: hand, beanBag: beanBag, store: store}
+function updateGame(gameID, board, hand, beanBag, store, gameColor,socket) {
+  paintGame(board, hand, beanBag, store, gameColor)
+  gameState = {gameID: gameID,
+               board: board,
+               hand: hand,
+               beanBag: beanBag,
+               store: store,
+               gameColor:gameColor}
   socket.emit('gamestate', gameState)
 }

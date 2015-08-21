@@ -80,9 +80,8 @@
         <td>
         <canvas ng-if="hand.length>1"
                 id="{{hand[1].canvasId}}"
-                witdh=100
-                height=200
-                <!-- width="{{handWidth}}"  height="{{handHeight}}" -->
+                width="{{handWidth}}"
+                height="{{handHeight}}"
                 ng-click="changePlayer()"></canvas>
         </td >
         <td >
@@ -152,11 +151,3 @@
               </TD>
 </TR>
 </TABLE>
-
-<div align="center">
-  <p>Log: {{log}}    // Server Log: {{serverlog}}  // X: {{mousePos.x}} // Y: {{mousePos.y}}<br>
-  <form name="outputForm">
-        <input type='text'  size='40' name="outputText" >
-
-  </form><p>
-  </div>
